@@ -1,0 +1,301 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Propuesta Topología" id="propuesta-v1">
+    <mxGraphModel dx="2039" dy="954" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2600" pageHeight="2000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;fontStyle=1;" value="Topología propuesta - Sede CABA (Core Colapsado) + Sedes Norte/Sur" vertex="1">
+          <mxGeometry height="40" width="1500" x="40" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="inet" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1;" value="INTERNET" vertex="1">
+          <mxGeometry height="100" width="200" x="600" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="isp2" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" value="ISP Backup&#xa;(2do enlace / 4G-LTE)" vertex="1">
+          <mxGeometry height="100" width="200" x="900" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="fw_caba" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;fontStyle=1;" value="FortiGate CABA&#xa;Firewall + Router + VPN" vertex="1">
+          <mxGeometry height="80" width="280" x="640" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="dmz" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;fontSize=12;" value="DMZ&#xa;Web pública · Portal Alumnos · Mail" vertex="1">
+          <mxGeometry height="80" width="280" x="1000" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="e_inet_fw" edge="1" parent="1" source="inet" style="endArrow=none;html=1;strokeWidth=2;" target="fw_caba">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_isp2_fw" edge="1" parent="1" source="isp2" style="endArrow=none;html=1;dashed=1;strokeColor=#b85450;fontSize=10;" target="fw_caba" value="respaldo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fw_dmz" edge="1" parent="1" source="fw_caba" style="endArrow=none;html=1;" target="dmz">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="core_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#82b366;fontStyle=1;verticalAlign=top;strokeWidth=2;fontSize=13;" value="CORE + DISTRIBUCIÓN COLAPSADO (Stack/MLAG)" vertex="1">
+          <mxGeometry height="200" width="680" x="440" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="core_sw1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" value="SW-CORE-CABA-01&#xa;L3" vertex="1">
+          <mxGeometry height="80" width="120" x="540" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="core_sw2" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" value="SW-CORE-CABA-02&#xa;L3" vertex="1">
+          <mxGeometry height="80" width="120" x="900" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="peer_link" edge="1" parent="1" source="core_sw1" style="endArrow=none;html=1;strokeWidth=4;strokeColor=#82b366;fontSize=10;fontStyle=1;" target="core_sw2" value="Peer Link / Stack / MLAG">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fw_core1" edge="1" parent="1" source="fw_caba" style="endArrow=none;html=1;strokeWidth=2;" target="core_sw1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fw_core2" edge="1" parent="1" source="fw_caba" style="endArrow=none;html=1;strokeWidth=2;" target="core_sw2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dc_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9673a6;fontStyle=1;verticalAlign=top;strokeWidth=2;fontSize=13;" value="DATACENTER (cuelga del Core, NO del acceso)" vertex="1">
+          <mxGeometry height="420" width="360" x="1200" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="dc_tor" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;" value="SW-DC-ToR&#xa;L3 (doble equipo)" vertex="1">
+          <mxGeometry height="80" width="120" x="1320" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="dc_srv" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;verticalAlign=top;fontSize=11;spacingLeft=10;spacingTop=8;" value="Servidores y servicios&#xa;&#xa;• AD / DNS / DHCP&#xa;• File Server / Backup&#xa;• Monitoreo (Zabbix/PRTG)&#xa;• WLC (Controlador WiFi)&#xa;• IPBX (VoIP)&#xa;• NVR (CCTV)&#xa;• NTP / Syslog" vertex="1">
+          <mxGeometry height="240" width="300" x="1230" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="e_dctor_srv" edge="1" parent="1" source="dc_tor" style="endArrow=none;html=1;" target="dc_srv">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_core1_dc" edge="1" parent="1" source="core_sw1" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#9673a6;" target="dc_tor">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_core2_dc" edge="1" parent="1" source="core_sw2" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#9673a6;" target="dc_tor">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="acc_pb_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#6c8ebf;fontStyle=1;verticalAlign=top;strokeWidth=2;fontSize=12;" value="ACCESO PB" vertex="1">
+          <mxGeometry height="320" width="300" x="40" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_pb_01" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-PB-01&#xa;Recepción" vertex="1">
+          <mxGeometry height="60" width="100" x="70" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_pb_02" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-PB-02&#xa;SUM" vertex="1">
+          <mxGeometry height="60" width="100" x="200" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_pb_03" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-PB-03&#xa;Biblioteca" vertex="1">
+          <mxGeometry height="60" width="100" x="70" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_pb_04" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-PB-04&#xa;Aula Magna" vertex="1">
+          <mxGeometry height="60" width="100" x="200" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="pb_ap" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;dashed=1;" value="APs WiFi PoE+" vertex="1">
+          <mxGeometry height="40" width="140" x="120" y="970" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pb01_c1" edge="1" parent="1" source="core_sw1" style="endArrow=none;html=1;strokeColor=#6c8ebf;strokeWidth=2;" target="sw_pb_01" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pb01_c2" edge="1" parent="1" source="core_sw2" style="endArrow=none;html=1;strokeColor=#6c8ebf;strokeWidth=2;fontSize=9;fontStyle=2;" target="sw_pb_01" value="2x uplinks LACP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pb02_core" edge="1" parent="1" source="core_sw2" style="endArrow=none;html=1;strokeColor=#6c8ebf;dashed=0;strokeWidth=1;" target="sw_pb_02">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pb03_core" edge="1" parent="1" source="core_sw1" style="endArrow=none;html=1;strokeColor=#6c8ebf;strokeWidth=1;" target="sw_pb_03">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pb04_core" edge="1" parent="1" source="core_sw2" style="endArrow=none;html=1;strokeColor=#6c8ebf;strokeWidth=1;" target="sw_pb_04">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pb_ap" edge="1" parent="1" source="sw_pb_02" style="endArrow=none;html=1;dashed=1;strokeColor=#82b366;" target="pb_ap">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="acc_p1_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#6c8ebf;fontStyle=1;verticalAlign=top;strokeWidth=2;fontSize=12;" value="ACCESO P1" vertex="1">
+          <mxGeometry height="320" width="300" x="360" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_p1_01" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-P1-01&#xa;Aulas Teóricas" vertex="1">
+          <mxGeometry height="60" width="100" x="390" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_p1_02" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-P1-02&#xa;Aulas Teóricas" vertex="1">
+          <mxGeometry height="60" width="100" x="520" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_p1_03" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-P1-03&#xa;Lab Informática" vertex="1">
+          <mxGeometry height="60" width="100" x="390" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_p1_04" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-P1-04&#xa;Lab Informática" vertex="1">
+          <mxGeometry height="60" width="100" x="520" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_ap" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;dashed=1;" value="APs WiFi PoE+" vertex="1">
+          <mxGeometry height="40" width="140" x="440" y="970" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p1_01_core" edge="1" parent="1" source="core_sw1" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="sw_p1_01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p1_02_core" edge="1" parent="1" source="core_sw1" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="sw_p1_02">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p1_03_core" edge="1" parent="1" source="core_sw2" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="sw_p1_03">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p1_04_core" edge="1" parent="1" source="core_sw2" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="sw_p1_04">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p1_ap" edge="1" parent="1" source="sw_p1_03" style="endArrow=none;html=1;dashed=1;strokeColor=#82b366;" target="p1_ap">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="acc_p2_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#6c8ebf;fontStyle=1;verticalAlign=top;strokeWidth=2;fontSize=12;" value="ACCESO P2" vertex="1">
+          <mxGeometry height="320" width="300" x="680" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_p2_01" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-P2-01&#xa;Lab Multimedia" vertex="1">
+          <mxGeometry height="60" width="100" x="710" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_p2_02" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-P2-02&#xa;Lab Multimedia" vertex="1">
+          <mxGeometry height="60" width="100" x="840" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_p2_03" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-P2-03&#xa;Estudio Grab." vertex="1">
+          <mxGeometry height="60" width="100" x="710" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_p2_04" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-P2-04&#xa;Video-conf" vertex="1">
+          <mxGeometry height="60" width="100" x="840" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_ap" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;dashed=1;" value="APs WiFi PoE+" vertex="1">
+          <mxGeometry height="40" width="140" x="760" y="970" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p2_01_core" edge="1" parent="1" source="core_sw1" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="sw_p2_01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p2_02_core" edge="1" parent="1" source="core_sw2" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="sw_p2_02">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p2_03_core" edge="1" parent="1" source="core_sw1" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="sw_p2_03">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p2_04_core" edge="1" parent="1" source="core_sw2" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="sw_p2_04">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p2_ap" edge="1" parent="1" source="sw_p2_04" style="endArrow=none;html=1;dashed=1;strokeColor=#82b366;" target="p2_ap">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="acc_p3_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#b85450;fontStyle=1;verticalAlign=top;strokeWidth=2;fontSize=12;" value="ACCESO P3 (Áreas administrativas)" vertex="1">
+          <mxGeometry height="320" width="180" x="1000" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_p3_01" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" value="SW-ACC-P3-01&#xa;Dirección" vertex="1">
+          <mxGeometry height="60" width="120" x="1030" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="sw_p3_02" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" value="SW-ACC-P3-02&#xa;Administración" vertex="1">
+          <mxGeometry height="60" width="120" x="1030" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p3_01_core" edge="1" parent="1" source="core_sw1" style="endArrow=none;html=1;strokeColor=#b85450;" target="sw_p3_01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p3_02_core" edge="1" parent="1" source="core_sw2" style="endArrow=none;html=1;strokeColor=#b85450;" target="sw_p3_02">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vlan_table" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;verticalAlign=top;fontSize=11;spacingLeft=10;spacingTop=8;fontFamily=Courier New;" value="&lt;b&gt;Plan de VLANs (segmentación lógica)&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&#xa;VLAN 10 · MGMT (gestión equipos)     10.10.10.0/24&#xa;VLAN 20 · Servidores / Datacenter   10.10.20.0/24&#xa;VLAN 30 · Dirección / Docentes      10.10.30.0/24&#xa;VLAN 40 · Administración            10.10.40.0/24&#xa;VLAN 50 · Aulas / Alumnos cableado  10.10.50.0/23&#xa;VLAN 60 · Laboratorios              10.10.62.0/23&#xa;VLAN 70 · WiFi Docentes             10.10.70.0/24&#xa;VLAN 71 · WiFi Alumnos              10.10.71.0/23&#xa;VLAN 72 · WiFi Invitados (aislada)  10.10.72.0/24&#xa;VLAN 80 · VoIP                      10.10.80.0/24&#xa;VLAN 90 · CCTV / Cámaras            10.10.90.0/24&#xa;VLAN 99 · IoT / BMS                 10.10.99.0/24" vertex="1">
+          <mxGeometry height="280" width="500" x="40" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;verticalAlign=top;fontSize=11;spacingLeft=10;spacingTop=8;" value="&lt;b&gt;LEYENDA / CONVENCIONES&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&#xa;• Cada switch de acceso (L2) se conecta mediante DOBLE UPLINK&#xa;   en LACP, uno a cada switch del Core (Stack/MLAG).&#xa;   Por claridad, sólo se grafica el doble uplink en SW-ACC-PB-01&#xa;   como ejemplo representativo.&#xa;&#xa;• Los 2 switches L3 del Core funcionan en Stack/MLAG, por lo&#xa;   que cada LAG es visto como un único enlace lógico.&#xa;&#xa;• El Datacenter cuelga DIRECTAMENTE del Core, no de la capa&#xa;   de acceso. Se usa un switch ToR L3 dedicado.&#xa;&#xa;• Túneles IPsec sitio-a-sitio entre FortiGate CABA y las sedes&#xa;   regionales (línea punteada).&#xa;&#xa;• APs PoE+ por piso para WiFi (SSIDs separados por VLAN)." vertex="1">
+          <mxGeometry height="280" width="620" x="560" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="norte_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;verticalAlign=top;strokeWidth=2;fontSize=14;" value="SEDE NORTE" vertex="1">
+          <mxGeometry height="600" width="800" x="1700" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="fg_norte" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" value="FortiGate Norte&#xa;FW + Router + VPN" vertex="1">
+          <mxGeometry height="60" width="220" x="2010" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="norte_core_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#82b366;fontStyle=1;verticalAlign=top;strokeWidth=2;fontSize=11;" value="CORE colapsado (Stack/MLAG)" vertex="1">
+          <mxGeometry height="140" width="540" x="1830" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="norte_l3_1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="SW-CORE-N-01&#xa;L3" vertex="1">
+          <mxGeometry height="60" width="100" x="1920" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="norte_l3_2" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="SW-CORE-N-02&#xa;L3" vertex="1">
+          <mxGeometry height="60" width="100" x="2180" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="norte_peer" edge="1" parent="1" source="norte_l3_1" style="endArrow=none;html=1;strokeWidth=3;strokeColor=#82b366;fontSize=9;" target="norte_l3_2" value="peer link">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fgn_l31" edge="1" parent="1" source="fg_norte" style="endArrow=none;html=1;strokeWidth=2;" target="norte_l3_1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fgn_l32" edge="1" parent="1" source="fg_norte" style="endArrow=none;html=1;strokeWidth=2;" target="norte_l3_2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="norte_sw_acc1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-N-01&#xa;Aulas / Lab" vertex="1">
+          <mxGeometry height="60" width="120" x="1900" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="norte_sw_acc2" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-N-02&#xa;Adm. regional" vertex="1">
+          <mxGeometry height="60" width="120" x="2170" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="e_n_acc1_l31" edge="1" parent="1" source="norte_l3_1" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="norte_sw_acc1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_n_acc1_l32" edge="1" parent="1" source="norte_l3_2" style="endArrow=none;html=1;strokeColor=#6c8ebf;fontSize=9;fontStyle=2;" target="norte_sw_acc1" value="2x uplinks">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_n_acc2_l31" edge="1" parent="1" source="norte_l3_1" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="norte_sw_acc2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_n_acc2_l32" edge="1" parent="1" source="norte_l3_2" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="norte_sw_acc2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="norte_areas" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=2;" value="Áreas: Aulas · Laboratorio · Administración regional" vertex="1">
+          <mxGeometry height="50" width="390" x="1900" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="e_n_acc1_areas" edge="1" parent="1" source="norte_sw_acc1" style="endArrow=none;html=1;strokeColor=#666666;" target="norte_areas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_n_acc2_areas" edge="1" parent="1" source="norte_sw_acc2" style="endArrow=none;html=1;strokeColor=#666666;" target="norte_areas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sur_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;verticalAlign=top;strokeWidth=2;fontSize=14;" value="SEDE SUR" vertex="1">
+          <mxGeometry height="600" width="800" x="1700" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="fg_sur" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" value="FortiGate Sur&#xa;FW + Router + VPN" vertex="1">
+          <mxGeometry height="60" width="220" x="2010" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="sur_core_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#82b366;fontStyle=1;verticalAlign=top;strokeWidth=2;fontSize=11;" value="CORE colapsado (Stack/MLAG)" vertex="1">
+          <mxGeometry height="140" width="540" x="1830" y="880" as="geometry" />
+        </mxCell>
+        <mxCell id="sur_l3_1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="SW-CORE-S-01&#xa;L3" vertex="1">
+          <mxGeometry height="60" width="100" x="1920" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="sur_l3_2" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="SW-CORE-S-02&#xa;L3" vertex="1">
+          <mxGeometry height="60" width="100" x="2180" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="sur_peer" edge="1" parent="1" source="sur_l3_1" style="endArrow=none;html=1;strokeWidth=3;strokeColor=#82b366;fontSize=9;" target="sur_l3_2" value="peer link">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fgs_l31" edge="1" parent="1" source="fg_sur" style="endArrow=none;html=1;strokeWidth=2;" target="sur_l3_1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fgs_l32" edge="1" parent="1" source="fg_sur" style="endArrow=none;html=1;strokeWidth=2;" target="sur_l3_2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sur_sw_acc1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-S-01&#xa;Aulas / Lab" vertex="1">
+          <mxGeometry height="60" width="120" x="1900" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="sur_sw_acc2" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="SW-ACC-S-02&#xa;Adm. regional" vertex="1">
+          <mxGeometry height="60" width="120" x="2170" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="e_s_acc1_l31" edge="1" parent="1" source="sur_l3_1" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="sur_sw_acc1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_s_acc1_l32" edge="1" parent="1" source="sur_l3_2" style="endArrow=none;html=1;strokeColor=#6c8ebf;fontSize=9;fontStyle=2;" target="sur_sw_acc1" value="2x uplinks">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_s_acc2_l31" edge="1" parent="1" source="sur_l3_1" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="sur_sw_acc2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_s_acc2_l32" edge="1" parent="1" source="sur_l3_2" style="endArrow=none;html=1;strokeColor=#6c8ebf;" target="sur_sw_acc2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sur_areas" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=2;" value="Áreas: Aulas · Laboratorio · Administración regional" vertex="1">
+          <mxGeometry height="50" width="390" x="1900" y="1180" as="geometry" />
+        </mxCell>
+        <mxCell id="e_s_acc1_areas" edge="1" parent="1" source="sur_sw_acc1" style="endArrow=none;html=1;strokeColor=#666666;" target="sur_areas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_s_acc2_areas" edge="1" parent="1" source="sur_sw_acc2" style="endArrow=none;html=1;strokeColor=#666666;" target="sur_areas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vpn_n" edge="1" parent="1" source="fw_caba" style="endArrow=classic;startArrow=classic;html=1;dashed=1;strokeColor=#b85450;strokeWidth=2;fontSize=11;fontStyle=1;curved=1;" target="fg_norte" value="IPsec VPN sitio-a-sitio">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vpn_s" edge="1" parent="1" source="fw_caba" style="endArrow=classic;startArrow=classic;html=1;dashed=1;strokeColor=#b85450;strokeWidth=2;fontSize=11;fontStyle=1;curved=1;" target="fg_sur" value="IPsec VPN sitio-a-sitio">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

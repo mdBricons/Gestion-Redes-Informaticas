@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>EduTech Campus — Diagrama Arquitectónico por piso</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #243246;
+    --border: #334155;
+    --wall: #475569;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --pb: #6366f1;
+    --p1: #0ea5e9;
+    --p2: #14b8a6;
+    --p3: #f59e0b;
+
+    --col-cam:   #c4b5fd;
+    --col-ap:    #93c5fd;
+    --col-pc:    #6ee7b7;
+    --col-bio:   #fcd34d;
+    --col-iot:   #f9a8d4;
+    --col-phone: #67e8f9;
+    --col-disp:  #cbd5e1;
+    --col-print: #cbd5e1;
+    --col-srv:   #fde68a;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  body { padding: 20px; }
+
+  h1 { margin: 0 0 4px; font-size: 22px; letter-spacing: 0.3px; }
+  .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+
+  /* ===== Legend ===== */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    font-size: 12px;
+  }
+  .legend .item { display: flex; align-items: center; gap: 6px; }
+  .legend .dot {
+    width: 12px; height: 12px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* ===== Tabs ===== */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  .tab {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 18px;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 3px solid transparent;
+    letter-spacing: 0.3px;
+    transition: all .15s ease;
+  }
+  .tab:hover { color: var(--text); background: var(--panel); }
+  .tab.active { color: var(--text); background: var(--panel); }
+  .tab.active[data-floor="pb"] { border-bottom-color: var(--pb); }
+  .tab.active[data-floor="p1"] { border-bottom-color: var(--p1); }
+  .tab.active[data-floor="p2"] { border-bottom-color: var(--p2); }
+  .tab.active[data-floor="p3"] { border-bottom-color: var(--p3); }
+
+  /* ===== Floor pane layout ===== */
+  .floor-pane {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 16px;
+  }
+  .floor-pane[hidden] { display: none; }
+
+  /* ===== Floor plan ===== */
+  .floor-plan {
+    background: var(--panel);
+    border: 3px solid var(--wall);
+    border-radius: 12px;
+    padding: 6px;
+    min-height: 640px;
+    display: grid;
+    gap: 6px;
+    position: relative;
+  }
+  .floor-plan.pb {
+    grid-template-areas:
+      "entrada recepcion sum sum"
+      "hall hall hall hall"
+      "biblioteca biblioteca aulamagna aulamagna"
+      "biblioteca biblioteca aulamagna aulamagna"
+      "idf banos banos exit";
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1.4fr 0.35fr 2fr 1.8fr 0.7fr;
+  }
+  .floor-plan.p1 {
+    grid-template-areas:
+      "aulaT1 aulaT2 aulaT3 aulaT4"
+      "aulaT1 aulaT2 aulaT3 aulaT4"
+      "pasillo pasillo pasillo pasillo"
+      "labA labA labB labB"
+      "labA labA labB labB"
+      "labA labA labB labB"
+      "idf banos hall hall";
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 0.8fr 0.8fr 0.35fr 1fr 1fr 1fr 0.6fr;
+  }
+  .floor-plan.p2 {
+    grid-template-areas:
+      "labMM labMM estudio estudio"
+      "labMM labMM estudio estudio"
+      "labMM labMM control control"
+      "pasillo pasillo pasillo pasillo"
+      "videoconf videoconf videoconf deposito"
+      "videoconf videoconf videoconf deposito"
+      "idf banos banos banos";
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 0.35fr 1fr 1fr 0.6fr;
+  }
+  .floor-plan.p3 {
+    grid-template-areas:
+      "direccion admin admin sala"
+      "direccion admin admin sala"
+      "pasillo pasillo pasillo pasillo"
+      "mantrap datacenter datacenter datacenter"
+      "mantrap datacenter datacenter datacenter"
+      "mantrap datacenter datacenter datacenter"
+      "banos banos hall hall";
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 0.35fr 1fr 1fr 1fr 0.6fr;
+  }
+
+  /* ===== Room base ===== */
+  .room {
+    position: relative;
+    background: rgba(255,255,255,0.02);
+    border: 2px solid var(--wall);
+    border-radius: 6px;
+    padding: 22px 8px 8px;
+    font-size: 11px;
+    overflow: hidden;
+  }
+  .room-name {
+    position: absolute;
+    top: 4px; left: 8px;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--text);
+    background: var(--panel);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .room-meta {
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 10px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .devices {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    align-content: flex-start;
+    margin-top: 2px;
+  }
+  .dev {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 2px 7px;
+    font-size: 10.5px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .dev svg { width: 11px; height: 11px; flex-shrink: 0; }
+  .dev.cam   { color: var(--col-cam);   border-color: #6d28d9; }
+  .dev.ap    { color: var(--col-ap);    border-color: #1e40af; }
+  .dev.pc    { color: var(--col-pc);    border-color: #047857; }
+  .dev.bio   { color: var(--col-bio);   border-color: #b45309; }
+  .dev.iot   { color: var(--col-iot);   border-color: #be185d; }
+  .dev.phone { color: var(--col-phone); border-color: #0e7490; }
+  .dev.disp  { color: var(--col-disp);  border-color: #475569; }
+  .dev.print { color: var(--col-print); border-color: #475569; }
+  .dev.srv   { color: var(--col-srv);   border-color: #b45309; }
+
+  /* Highlights por tipo de cuarto */
+  .room.idf {
+    background: rgba(56,189,248,0.08);
+    border-color: var(--p1);
+    border-style: dashed;
+  }
+  .room.idf .room-name { color: var(--p1); }
+  .room.datacenter {
+    background: linear-gradient(180deg, rgba(245,158,11,0.10), rgba(245,158,11,0.04));
+    border: 3px double var(--p3);
+  }
+  .room.datacenter .room-name {
+    color: var(--p3); border-color: var(--p3);
+  }
+  .room.mantrap {
+    background: rgba(245,158,11,0.05);
+    border-color: var(--p3);
+    border-style: dashed;
+  }
+  .room.mantrap .room-name { color: var(--p3); }
+  .room.hall, .room.pasillo, .room.banos, .room.exit, .room.deposito {
+    background: rgba(255,255,255,0.015);
+    border-style: dashed;
+    border-color: var(--border);
+  }
+  .room.hall .room-name,
+  .room.pasillo .room-name,
+  .room.banos .room-name,
+  .room.exit .room-name,
+  .room.deposito .room-name { color: var(--muted); }
+
+  .room.entrada { border-color: var(--pb); background: rgba(99,102,241,0.06); }
+  .room.entrada .room-name { color: var(--pb); }
+
+  /* Puertas (gap visual) */
+  .door {
+    position: absolute;
+    background: var(--panel);
+    z-index: 2;
+  }
+  .door.horizontal { height: 4px; width: 24px; }
+  .door.vertical { width: 4px; height: 24px; }
+
+  /* Indicador de orientación */
+  .compass {
+    position: absolute;
+    bottom: 10px; right: 14px;
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.2;
+  }
+  .compass .arrow { font-size: 16px; color: var(--text); }
+  .frente-label {
+    text-align: center;
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin: 0 0 4px;
+    text-transform: uppercase;
+  }
+  .frente-label.bottom { margin: 4px 0 0; }
+
+  /* ===== Side info ===== */
+  .side {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 12px;
+  }
+  .card h3 {
+    margin: 0 0 8px;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .info-row {
+    display: flex; justify-content: space-between;
+    padding: 3px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-row .k { color: var(--muted); }
+  .info-row .v { color: var(--text); font-weight: 600; }
+
+  .floor-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-right: 6px;
+  }
+  .floor-tag.pb { background: rgba(99,102,241,0.2);  color: var(--pb); border: 1px solid var(--pb); }
+  .floor-tag.p1 { background: rgba(14,165,233,0.2);  color: var(--p1); border: 1px solid var(--p1); }
+  .floor-tag.p2 { background: rgba(20,184,166,0.2);  color: var(--p2); border: 1px solid var(--p2); }
+  .floor-tag.p3 { background: rgba(245,158,11,0.2);  color: var(--p3); border: 1px solid var(--p3); }
+
+  .vlan-list { line-height: 1.7; }
+  .vlan-list .b { font-weight: 700; color: var(--text); }
+
+  .footer { margin-top: 14px; color: var(--muted); font-size: 11px; text-align: right; }
+
+  @media (max-width: 1100px) {
+    .floor-pane { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>EduTech Campus S.A. — Diagrama Arquitectónico (vista en planta)</h1>
+<div class="subtitle">
+  Campus Central (CABA) · ~1.800 m² por planta · 4 pisos · Disposición física de aulas, áreas y dispositivos de red.
+</div>
+
+<!-- ===== SVG defs (íconos) ===== -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="i-ap" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a9 9 0 0 0-9 9h2a7 7 0 0 1 14 0h2a9 9 0 0 0-9-9zm0 4a5 5 0 0 0-5 5h2a3 3 0 0 1 6 0h2a5 5 0 0 0-5-5zm0 4a1 1 0 0 0-1 1v8h2v-8a1 1 0 0 0-1-1z"/></symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24"><path fill="currentColor" d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></symbol>
+    <symbol id="i-pc" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H8v-2h3v-2H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></symbol>
+    <symbol id="i-bio" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1a10 10 0 0 0-7 17.1l1.4-1.4A8 8 0 1 1 20 12h2A10 10 0 0 0 12 1zm0 4a7 7 0 0 0-6 10.6l1.4-1.4A5 5 0 1 1 17 12h2a7 7 0 0 0-7-7zm0 4a3 3 0 0 0-3 3 3 3 0 0 0 .8 2l1.4-1.4a1 1 0 1 1 1.6 0l1.4 1.4A3 3 0 0 0 12 9z"/></symbol>
+    <symbol id="i-iot" viewBox="0 0 24 24"><path fill="currentColor" d="M7 7h10v10H7zM4 9h2v2H4zm0 4h2v2H4zm14-4h2v2h-2zm0 4h2v2h-2zM9 4h2v2H9zm4 0h2v2h-2zM9 18h2v2H9zm4 0h2v2h-2z"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><path fill="currentColor" d="M19 8H5a3 3 0 0 0-3 3v6h4v4h12v-4h4v-6a3 3 0 0 0-3-3zM7 19v-4h10v4H7zm12-7a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm-2-7H7v3h10V5z"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path fill="currentColor" d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 4v12h12V6H6zm5 13h2v1h-2z"/></symbol>
+    <symbol id="i-disp" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H13v2h4v2H7v-2h4v-2H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></symbol>
+    <symbol id="i-srv" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16v6H4zm0 10h16v6H4zm2 2v2h2v-2H6zm0-10v2h2V6H6z"/></symbol>
+    <symbol id="i-sw" viewBox="0 0 24 24"><path fill="currentColor" d="M3 8h18v3H3zm0 5h18v3H3zM6 9.5h1v.5H6zm3 0h1v.5H9zm3 0h1v.5h-1zm-6 5h1v.5H6zm3 0h1v.5H9zm3 0h1v.5h-1z"/></symbol>
+    <symbol id="i-fw" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></symbol>
+  </defs>
+</svg>
+
+<!-- ===== Leyenda ===== -->
+<div class="legend">
+  <div class="item"><span class="dot" style="background:var(--col-cam)"></span> Cámara IP</div>
+  <div class="item"><span class="dot" style="background:var(--col-ap)"></span> AP WiFi</div>
+  <div class="item"><span class="dot" style="background:var(--col-pc)"></span> PC / Workstation</div>
+  <div class="item"><span class="dot" style="background:var(--col-bio)"></span> Lector huella / NAC</div>
+  <div class="item"><span class="dot" style="background:var(--col-iot)"></span> IoT / Equipo lab</div>
+  <div class="item"><span class="dot" style="background:var(--col-phone)"></span> Teléfono IP / Codec</div>
+  <div class="item"><span class="dot" style="background:var(--col-disp)"></span> Display / Proyector</div>
+  <div class="item"><span class="dot" style="background:var(--col-srv)"></span> Servidor / Rack</div>
+</div>
+
+<!-- ===== Tabs ===== -->
+<div class="tabs" role="tablist">
+  <button class="tab active" data-floor="pb">Planta Baja</button>
+  <button class="tab" data-floor="p1">1° Piso</button>
+  <button class="tab" data-floor="p2">2° Piso</button>
+  <button class="tab" data-floor="p3">3° Piso</button>
+</div>
+
+<!-- =================== PLANTA BAJA =================== -->
+<div class="floor-pane" id="floor-pb">
+  <div>
+    <div class="frente-label">─── Frente del edificio · Entrada principal ───</div>
+    <div class="floor-plan pb">
+
+      <div class="room entrada" style="grid-area: entrada;">
+        <div class="room-name">Entrada / Lobby</div>
+        <div class="room-meta">Acceso público</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Torno + huella</span>
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Signage</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+        </div>
+      </div>
+
+      <div class="room" style="grid-area: recepcion;">
+        <div class="room-name">Recepción</div>
+        <div class="room-meta">Personal admin</div>
+        <div class="devices">
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PC recep.</span>
+          <span class="dev phone"><svg><use href="#i-phone"/></svg>VoIP</span>
+          <span class="dev print"><svg><use href="#i-print"/></svg>Impr.</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella</span>
+        </div>
+      </div>
+
+      <div class="room" style="grid-area: sum;">
+        <div class="room-name">SUM (Salón de Usos Múltiples)</div>
+        <div class="room-meta">Eventos · ~120 personas</div>
+        <div class="devices">
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>APs x2</span>
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Display 4K</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Control AV</span>
+        </div>
+      </div>
+
+      <div class="room hall" style="grid-area: hall;">
+        <div class="room-name">Hall central / Pasillos</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x3</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+        </div>
+      </div>
+
+      <div class="room" style="grid-area: biblioteca;">
+        <div class="room-name">Biblioteca</div>
+        <div class="room-meta">Consulta · 30 puestos</div>
+        <div class="devices">
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PCs x10 (consulta)</span>
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PC bibliotec.</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>APs x2</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Lector RFID</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Control acceso</span>
+          <span class="dev print"><svg><use href="#i-print"/></svg>Impr.</span>
+        </div>
+      </div>
+
+      <div class="room" style="grid-area: aulamagna;">
+        <div class="room-name">Aula Magna</div>
+        <div class="room-meta">Auditorio · ~200 butacas</div>
+        <div class="devices">
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>APs x3</span>
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Proyector + pantalla</span>
+          <span class="dev phone"><svg><use href="#i-phone"/></svg>Codec VC</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám PTZ x2</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Control luces/audio</span>
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PC tarima</span>
+        </div>
+      </div>
+
+      <div class="room idf" style="grid-area: idf;">
+        <div class="room-name">IDF-PB</div>
+        <div class="room-meta">Cuarto técnico</div>
+        <div class="devices">
+          <span class="dev"><svg><use href="#i-sw"/></svg>SW Acc PoE+ 48p</span>
+          <span class="dev"><svg><use href="#i-sw"/></svg>Uplink 10G ↑ Core</span>
+        </div>
+      </div>
+
+      <div class="room banos" style="grid-area: banos;">
+        <div class="room-name">Baños / Servicios</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám (acceso)</span>
+        </div>
+      </div>
+
+      <div class="room exit" style="grid-area: exit;">
+        <div class="room-name">Salida emergencia</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Sensor puerta</span>
+        </div>
+      </div>
+
+      <div class="compass">
+        <div class="arrow">↑</div>
+        Frente
+      </div>
+    </div>
+    <div class="frente-label bottom">─── Fondo · Salida emergencia ───</div>
+  </div>
+
+  <aside class="side">
+    <div class="card">
+      <h3><span class="floor-tag pb">PB</span> Planta Baja</h3>
+      <div class="info-row"><span class="k">Función principal</span><span class="v">Acceso público + eventos</span></div>
+      <div class="info-row"><span class="k">Áreas</span><span class="v">Recepción, SUM, Biblioteca, Aula Magna</span></div>
+      <div class="info-row"><span class="k">Dispositivos aprox.</span><span class="v">80</span></div>
+      <div class="info-row"><span class="k">Densidad usuarios</span><span class="v">Variable (eventos)</span></div>
+      <div class="info-row"><span class="k">IDF</span><span class="v">IDF-PB (junto a hall)</span></div>
+      <div class="info-row"><span class="k">Switches de acceso</span><span class="v">4 (uno por área)</span></div>
+      <div class="info-row"><span class="k">Uplink al Core</span><span class="v">10G fibra (vertical)</span></div>
+    </div>
+    <div class="card">
+      <h3>VLANs activas en este piso</h3>
+      <div class="vlan-list">
+        <div>• <span class="b">10 MGMT</span> — gestión de equipos</div>
+        <div>• <span class="b">30 Docentes</span> — Biblio + Aula Magna + SUM</div>
+        <div>• <span class="b">40 Administración</span> — Recepción + bibliotecario</div>
+        <div>• <span class="b">50 Alumnos</span> — PCs consulta Biblio · público SUM/A.Magna</div>
+        <div>• <span class="b">55 Alumnos-WiFi</span> — BYOD en todo el piso</div>
+        <div>• <span class="b">70 WiFi-Invitados</span> — Lobby, SUM, A.Magna</div>
+        <div>• <span class="b">90 CCTV</span> — todas las cámaras</div>
+        <div>• <span class="b">99 IoT</span> — RFID Biblio, control AV, tornos huella</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Notas de seguridad física</h3>
+      <div style="line-height:1.6; color:var(--muted);">
+        Acceso controlado en lobby (torno + huella). Cámaras IP cubren entrada, hall central, pasillos a Biblioteca y A. Magna, y salida de emergencia. Todas las cámaras transmiten al NVR ubicado en el Datacenter (P3).
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- =================== 1° PISO =================== -->
+<div class="floor-pane" id="floor-p1" hidden>
+  <div>
+    <div class="frente-label">─── Frente del edificio ───</div>
+    <div class="floor-plan p1">
+
+      <div class="room" style="grid-area: aulaT1;">
+        <div class="room-name">Aula T1</div>
+        <div class="room-meta">~30 alumnos</div>
+        <div class="devices">
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Proyector</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PC docente</span>
+        </div>
+      </div>
+      <div class="room" style="grid-area: aulaT2;">
+        <div class="room-name">Aula T2</div>
+        <div class="room-meta">~30 alumnos</div>
+        <div class="devices">
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Proyector</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PC docente</span>
+        </div>
+      </div>
+      <div class="room" style="grid-area: aulaT3;">
+        <div class="room-name">Aula T3</div>
+        <div class="room-meta">~30 alumnos</div>
+        <div class="devices">
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Proyector</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PC docente</span>
+        </div>
+      </div>
+      <div class="room" style="grid-area: aulaT4;">
+        <div class="room-name">Aula T4</div>
+        <div class="room-meta">~30 alumnos</div>
+        <div class="devices">
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Proyector</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PC docente</span>
+        </div>
+      </div>
+
+      <div class="room pasillo" style="grid-area: pasillo;">
+        <div class="room-name">Pasillo central</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x3</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>AP x2</span>
+          <span class="dev print"><svg><use href="#i-print"/></svg>Impr. compartida</span>
+        </div>
+      </div>
+
+      <div class="room" style="grid-area: labA;">
+        <div class="room-name">Laboratorio de Informática A</div>
+        <div class="room-meta">Alta densidad · 30 PCs</div>
+        <div class="devices">
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PCs x30 (5 filas)</span>
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PC docente + KVM</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>APs x2</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Proyector + pizarra</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Equipos red lab</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella ingreso</span>
+        </div>
+      </div>
+
+      <div class="room" style="grid-area: labB;">
+        <div class="room-name">Laboratorio de Informática B</div>
+        <div class="room-meta">Alta densidad · 30 PCs</div>
+        <div class="devices">
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PCs x30 (5 filas)</span>
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PC docente + KVM</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>APs x2</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Proyector + pizarra</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Equipos red lab</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella ingreso</span>
+        </div>
+      </div>
+
+      <div class="room idf" style="grid-area: idf;">
+        <div class="room-name">IDF-P1</div>
+        <div class="room-meta">Cuarto técnico</div>
+        <div class="devices">
+          <span class="dev"><svg><use href="#i-sw"/></svg>SW Acc PoE+ 48p x2</span>
+          <span class="dev"><svg><use href="#i-sw"/></svg>Uplink 10G ↑ Core</span>
+        </div>
+      </div>
+      <div class="room banos" style="grid-area: banos;">
+        <div class="room-name">Baños</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám (acceso)</span>
+        </div>
+      </div>
+      <div class="room hall" style="grid-area: hall;">
+        <div class="room-name">Hall ascensores / escalera</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Lector huella</span>
+        </div>
+      </div>
+
+      <div class="compass">
+        <div class="arrow">↑</div>
+        Frente
+      </div>
+    </div>
+    <div class="frente-label bottom">─── Fondo ───</div>
+  </div>
+
+  <aside class="side">
+    <div class="card">
+      <h3><span class="floor-tag p1">1°</span> Aulas y Laboratorios</h3>
+      <div class="info-row"><span class="k">Función principal</span><span class="v">Educativa (clases + práctica)</span></div>
+      <div class="info-row"><span class="k">Áreas</span><span class="v">4 Aulas teóricas + 2 Labs informática</span></div>
+      <div class="info-row"><span class="k">Dispositivos aprox.</span><span class="v">120 (mayor densidad)</span></div>
+      <div class="info-row"><span class="k">Densidad usuarios</span><span class="v">~150 simultáneos</span></div>
+      <div class="info-row"><span class="k">IDF</span><span class="v">IDF-P1 (cuarto técnico)</span></div>
+      <div class="info-row"><span class="k">Switches de acceso</span><span class="v">4 (2 aulas + 2 labs)</span></div>
+      <div class="info-row"><span class="k">Uplink al Core</span><span class="v">10G fibra (vertical)</span></div>
+    </div>
+    <div class="card">
+      <h3>VLANs activas en este piso</h3>
+      <div class="vlan-list">
+        <div>• <span class="b">10 MGMT</span></div>
+        <div>• <span class="b">30 Docentes</span> — PC docente en cada aula/lab</div>
+        <div>• <span class="b">50 Alumnos</span> — PCs en labs</div>
+        <div>• <span class="b">55 Alumnos-WiFi</span> — BYOD (denso)</div>
+        <div>• <span class="b">70 WiFi-Invitados</span> — auditorías/visitas</div>
+        <div>• <span class="b">90 CCTV</span> — cámaras en aulas, pasillo, labs</div>
+        <div>• <span class="b">99 IoT</span> — equipos de red en labs · huella ingreso</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Capacidad WLAN</h3>
+      <div style="line-height:1.6; color:var(--muted);">
+        Piso de máxima densidad BYOD. Se calcula 1 AP cada ~25 dispositivos. Cobertura redundante en labs (2 APs c/u) para tolerar fallas y soportar pico de tráfico durante clases.
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- =================== 2° PISO =================== -->
+<div class="floor-pane" id="floor-p2" hidden>
+  <div>
+    <div class="frente-label">─── Frente del edificio ───</div>
+    <div class="floor-plan p2">
+
+      <div class="room" style="grid-area: labMM;">
+        <div class="room-name">Laboratorio Multimedia</div>
+        <div class="room-meta">Edición / Postproducción</div>
+        <div class="devices">
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>WS edición x15</span>
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Monitores ref. x15</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Tablas digitalización</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella ingreso</span>
+        </div>
+      </div>
+
+      <div class="room" style="grid-area: estudio;">
+        <div class="room-name">Estudio de grabación</div>
+        <div class="room-meta">Acústicamente aislado</div>
+        <div class="devices">
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>WS captura</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Mics/preamps</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Mixer digital</span>
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Monitores</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám interna</span>
+        </div>
+      </div>
+
+      <div class="room" style="grid-area: control;">
+        <div class="room-name">Sala de control técnico</div>
+        <div class="room-meta">Operación AV</div>
+        <div class="devices">
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>WS control</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Switcher video</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Patch panel AV</span>
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Monitores multiview</span>
+        </div>
+      </div>
+
+      <div class="room pasillo" style="grid-area: pasillo;">
+        <div class="room-name">Pasillo / circulación</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+        </div>
+      </div>
+
+      <div class="room" style="grid-area: videoconf;">
+        <div class="room-name">Sala de Videoconferencia</div>
+        <div class="room-meta">Clases híbridas en vivo</div>
+        <div class="devices">
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Display 4K x2</span>
+          <span class="dev phone"><svg><use href="#i-phone"/></svg>Codec VC</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>APs x2</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám PTZ x2</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Mics ambiente</span>
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PC moderador</span>
+        </div>
+      </div>
+
+      <div class="room deposito" style="grid-area: deposito;">
+        <div class="room-name">Depósito AV</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella</span>
+        </div>
+      </div>
+
+      <div class="room idf" style="grid-area: idf;">
+        <div class="room-name">IDF-P2</div>
+        <div class="room-meta">Cuarto técnico</div>
+        <div class="devices">
+          <span class="dev"><svg><use href="#i-sw"/></svg>SW Acc PoE+ 48p</span>
+          <span class="dev"><svg><use href="#i-sw"/></svg>Uplink 10G ↑ Core</span>
+        </div>
+      </div>
+
+      <div class="room banos" style="grid-area: banos;">
+        <div class="room-name">Baños / Hall ascensores</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Lector huella</span>
+        </div>
+      </div>
+
+      <div class="compass">
+        <div class="arrow">↑</div>
+        Frente
+      </div>
+    </div>
+    <div class="frente-label bottom">─── Fondo ───</div>
+  </div>
+
+  <aside class="side">
+    <div class="card">
+      <h3><span class="floor-tag p2">2°</span> Multimedia y Videoconferencia</h3>
+      <div class="info-row"><span class="k">Función principal</span><span class="v">Producción audiovisual</span></div>
+      <div class="info-row"><span class="k">Áreas</span><span class="v">Lab MM, Estudio Grab., Videoconf., Control</span></div>
+      <div class="info-row"><span class="k">Dispositivos aprox.</span><span class="v">60</span></div>
+      <div class="info-row"><span class="k">Densidad usuarios</span><span class="v">Baja-media (especializada)</span></div>
+      <div class="info-row"><span class="k">IDF</span><span class="v">IDF-P2</span></div>
+      <div class="info-row"><span class="k">Switches de acceso</span><span class="v">4 (alta capacidad)</span></div>
+      <div class="info-row"><span class="k">Uplink al Core</span><span class="v">10G fibra (clases en vivo)</span></div>
+    </div>
+    <div class="card">
+      <h3>VLANs activas en este piso</h3>
+      <div class="vlan-list">
+        <div>• <span class="b">10 MGMT</span></div>
+        <div>• <span class="b">30 Docentes</span> — operadores técnicos</div>
+        <div>• <span class="b">50 Alumnos</span> — Lab MM + Videoconf</div>
+        <div>• <span class="b">55 Alumnos-WiFi</span> — Lab MM</div>
+        <div>• <span class="b">90 CCTV</span></div>
+        <div>• <span class="b">99 IoT</span> — equipos AV, mixer, switcher, mics</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>QoS crítico</h3>
+      <div style="line-height:1.6; color:var(--muted);">
+        Piso con tráfico de videoconferencia en vivo. Las VLANs de Docentes y Alumnos en este piso reciben marcado DSCP AF41 (video interactivo). El uplink al Core va con prioridad estricta para no degradar las clases en vivo.
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- =================== 3° PISO =================== -->
+<div class="floor-pane" id="floor-p3" hidden>
+  <div>
+    <div class="frente-label">─── Frente del edificio ───</div>
+    <div class="floor-plan p3">
+
+      <div class="room" style="grid-area: direccion;">
+        <div class="room-name">Dirección</div>
+        <div class="room-meta">Acceso restringido</div>
+        <div class="devices">
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PC director</span>
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PC asistente</span>
+          <span class="dev phone"><svg><use href="#i-phone"/></svg>VoIP</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+          <span class="dev print"><svg><use href="#i-print"/></svg>Impr.</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám pasillo</span>
+        </div>
+      </div>
+
+      <div class="room" style="grid-area: admin;">
+        <div class="room-name">Administración</div>
+        <div class="room-meta">~10 puestos</div>
+        <div class="devices">
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PCs x10</span>
+          <span class="dev phone"><svg><use href="#i-phone"/></svg>VoIP x10</span>
+          <span class="dev print"><svg><use href="#i-print"/></svg>Multifunción</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>AP x2</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella</span>
+        </div>
+      </div>
+
+      <div class="room" style="grid-area: sala;">
+        <div class="room-name">Sala de reuniones</div>
+        <div class="room-meta">Junta directiva</div>
+        <div class="devices">
+          <span class="dev disp"><svg><use href="#i-disp"/></svg>Display 4K</span>
+          <span class="dev phone"><svg><use href="#i-phone"/></svg>Codec VC</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+        </div>
+      </div>
+
+      <div class="room pasillo" style="grid-area: pasillo;">
+        <div class="room-name">Pasillo administrativo</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella</span>
+        </div>
+      </div>
+
+      <div class="room mantrap" style="grid-area: mantrap;">
+        <div class="room-name">Mantrap (esclusa)</div>
+        <div class="room-meta">Acceso DC</div>
+        <div class="devices">
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella x2</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+        </div>
+      </div>
+
+      <div class="room datacenter" style="grid-area: datacenter;">
+        <div class="room-name">Datacenter / MDF principal</div>
+        <div class="room-meta">Sala restringida · Acceso doble huella · Cámaras internas</div>
+        <div class="devices">
+          <span class="dev srv"><svg><use href="#i-fw"/></svg>FortiGate CABA (FW+VPN+SD-WAN)</span>
+          <span class="dev srv"><svg><use href="#i-sw"/></svg>Core Switches L3 x2 (Stack/MLAG)</span>
+          <span class="dev srv"><svg><use href="#i-sw"/></svg>SW-DC-ToR x2 (HA)</span>
+          <span class="dev srv"><svg><use href="#i-srv"/></svg>Servidores AD/DNS/DHCP</span>
+          <span class="dev srv"><svg><use href="#i-srv"/></svg>File Server + Backup</span>
+          <span class="dev srv"><svg><use href="#i-srv"/></svg>NVR (CCTV centralizado)</span>
+          <span class="dev srv"><svg><use href="#i-srv"/></svg>WLC (Controlador WiFi)</span>
+          <span class="dev srv"><svg><use href="#i-srv"/></svg>RADIUS / NAC 802.1X</span>
+          <span class="dev srv"><svg><use href="#i-srv"/></svg>Servidor biometría</span>
+          <span class="dev srv"><svg><use href="#i-srv"/></svg>Monitoreo (Zabbix/PRTG)</span>
+          <span class="dev srv"><svg><use href="#i-srv"/></svg>UPS A+B</span>
+          <span class="dev srv"><svg><use href="#i-srv"/></svg>Aire AC redundante</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám internas x2</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Sensor T° + humedad</span>
+          <span class="dev iot"><svg><use href="#i-iot"/></svg>Detector humo/agua</span>
+        </div>
+      </div>
+
+      <div class="room banos" style="grid-area: banos;">
+        <div class="room-name">Baños</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám acceso</span>
+        </div>
+      </div>
+
+      <div class="room hall" style="grid-area: hall;">
+        <div class="room-name">Hall ascensores / escalera</div>
+        <div class="devices">
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella acceso piso</span>
+        </div>
+      </div>
+
+      <div class="compass">
+        <div class="arrow">↑</div>
+        Frente
+      </div>
+    </div>
+    <div class="frente-label bottom">─── Fondo ───</div>
+  </div>
+
+  <aside class="side">
+    <div class="card">
+      <h3><span class="floor-tag p3">3°</span> Dirección, Admin y Datacenter</h3>
+      <div class="info-row"><span class="k">Función principal</span><span class="v">Gestión + núcleo de red</span></div>
+      <div class="info-row"><span class="k">Áreas</span><span class="v">Dirección, Admin, Datacenter MDF</span></div>
+      <div class="info-row"><span class="k">Dispositivos aprox.</span><span class="v">70 (usuarios) + infra DC</span></div>
+      <div class="info-row"><span class="k">IDF / MDF</span><span class="v">MDF principal (Datacenter)</span></div>
+      <div class="info-row"><span class="k">Core Colapsado</span><span class="v">Aquí viven los Core L3</span></div>
+      <div class="info-row"><span class="k">Switches de acceso</span><span class="v">2 (Dirección + Admin) + ToR DC</span></div>
+      <div class="info-row"><span class="k">Acceso físico</span><span class="v">Mantrap + doble huella + Cám</span></div>
+    </div>
+    <div class="card">
+      <h3>VLANs activas en este piso</h3>
+      <div class="vlan-list">
+        <div>• <span class="b">10 MGMT</span></div>
+        <div>• <span class="b">20 Servidores</span> — toda la VLAN vive en el DC</div>
+        <div>• <span class="b">30 Docentes</span> — Dirección (algunos)</div>
+        <div>• <span class="b">40 Administración</span> — Dirección + Admin</div>
+        <div>• <span class="b">90 CCTV</span> — cámaras + NVR centralizado</div>
+        <div>• <span class="b">99 IoT</span> — sensores DC, huella</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Datacenter — Redundancias</h3>
+      <div style="line-height:1.6; color:var(--muted);">
+        Doble alimentación (A/B vía UPS independientes), refrigeración redundante (N+1), control de acceso por mantrap con doble factor (huella + tarjeta), cámaras internas dedicadas en VLAN 90 con grabación 24×7 en NVR local.
+      </div>
+    </div>
+  </aside>
+</div>
+
+<div class="footer">
+  EduTech Campus S.A. · TP Gestión de Redes Informáticas · Diagrama arquitectónico por piso (vista en planta).
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.floor-pane').forEach(p => p.hidden = true);
+      document.getElementById('floor-' + btn.dataset.floor).hidden = false;
+    });
+  });
+</script>
+
+</body>
+</html>

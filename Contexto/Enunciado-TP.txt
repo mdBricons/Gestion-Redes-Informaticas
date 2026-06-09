@@ -1,0 +1,60 @@
+1. Descripción del Caso de Análisis
+EduTech Campus S.A. es una institución educativa privada de nivel terciario y universitario en plena expansión. Ofrece carreras presenciales, híbridas y 100% virtuales en áreas de tecnología, diseño y ciencias aplicadas. En los últimos cuatro años triplicó su matrícula, incorporó nuevas modalidades de cursada y abrió dos centros regionales en el interior del país.
+La infraestructura de red fue diseñada hace ocho años para una capacidad muy inferior a la actual y ya no puede sostener las demandas operativas del negocio: clases en vivo por videoconferencia, sistemas de gestión académica en la nube, laboratorios de informática con alta densidad de dispositivos y acceso masivo de alumnos con dispositivos personales (BYOD).
+1.1. El desafío
+Si usted se posicionara en el rol de Jefe de Infraestructura IT o Referente Técnico de EduTech Campus S.A., ¿Cómo presentaría un proyecto integral de actualización de red con el objeto de ob-tener aprobación presupuestaria, con todas las justificaciones técnicas y de negocio correspondientes?
+2. Situación Actual
+La red existente presenta las siguientes deficiencias:
+•Red LAN Fastethernet de 8 años de antigüedad, plana y sin segmentación lógica (sin VLANs).
+•Wifi implementado con access points de gama doméstica sin controlador centralizado; cobertura irregular en aulas y laboratorios.
+•Enlace WAN de 50 Mbps simétrico, compartido entre campus central y sedes regionales, insuficiente para videoconferencias simultáneas.
+•Sin separación entre redes académica, administrativa y de alumnos: cualquier dispositivo accede a todos los recursos de la empresa.
+•Sin políticas de QoS: el tráfico de clases en vivo compite en igualdad de condiciones con descargas y redes sociales.
+•Sin sistema de autenticación de red (NAC/802.1X): los dispositivos personales de alumnos se conectan sin ningún control de identidad.
+•Sin videovigilancia IP integrada: el sistema actual es analógico, obsoleto y no centralizado.
+•El datacenter del campus central carece de redundancia de alimentación y refrigeración adecuada.
+
+
+2.1. Infraestructura edilicia — Campus Central
+El campus central está ubicado en la Ciudad Autónoma de Buenos Aires y cuenta con un edificio de 4 pisos, aproximadamente 1.800 m² por planta:
+Piso Área / Función Dispositivos aprox. PB Recepción, SUM, biblioteca, aula magna 80 1° Aulas teóricas y laboratorios de informática 120 2° Laboratorios multimedia, estudio de grabación y video-conferencia 60 3° Dirección, administración y datacenter 70
+2.2. Sedes Regionales
+Sede Ubicación / Superficie Descripción Sede Regional Norte Rosario, Santa Fe — 1 piso, 600 m² Aulas, laboratorio y administración regional Sede Regional Sur Mendoza — 1 piso, 500 m² Aulas, laboratorio y administración regional
+3. Objetivos del Proyecto
+El proyecto deberá abordar los siguientes objetivos:
+1.Diseñar la red LAN de cada piso con arquitectura jerárquica (Core Colapsado + Distribución + Acceso) y segmentación lógica y física adecuada.
+2.Implementar VLANs por segmento funcional: docentes, alumnos, administración, laboratorios/IoT, videovigilancia e invitados.
+3.Diseñar la red inalámbrica (WLAN) con cobertura total, mapas de calor y gestión centralizada (controlador en nube u on-premise).
+4.Proyectar el cableado estructurado cumpliendo la norma TIA/EIA-568-C.2, con racks MDF/IDF por piso, planos y etiquetado.
+5.Modelar la interconexión WAN entre campus central y sedes regionales con redundancia y SD-WAN básico.
+6.Definir políticas de QoS para priorizar el tráfico de videoconferencias (clases en vivo) y sis-temas académicos críticos.
+7.Implementar control de acceso a la red (NAC / 802.1X) para dispositivos BYOD de alum-nos y portal cautivo para invitados.
+8.Diseñar la red de videovigilancia IP con almacenamiento centralizado en el datacenter.
+9.Incorporar consideraciones de seguridad perimetral, gestión centralizada y alta disponibilidad.
+10.Elaborar dos presupuestos reales y comparativos en Argentina (equipamiento + cableado + mano de obra).
+
+4. Requerimientos Técnicos Mínimos
+4.1. Red LAN
+Diseñar la arquitectura de red LAN del campus central y las sedes regionales, justificando el modelo jerárquico adoptado para cada caso. La propuesta debe contemplar la segmentación lógica de la red por área funcional, la selección de equipamiento según el rol en la jerarquía, y los mecanismos necesarios para garantizar redundancia, eficiencia en el uso del ancho de banda y un es-quema de direccionamiento IP documentado y escalable.
+
+4.2. Red WLAN
+Parámetro Campus Central Sedes Regionales Dispositivos corp. 100 por piso 60 por sede Dispositivos BYOD 80 por piso (alumnos) 50 por sede SSID Corporativo / Docentes / Alumnos / Invitados Corporativo / Alumnos / Invitados Seguridad WPA3-Enterprise (corp.) + Portal cautivo (alumnos) WPA3-Enterprise + Portal cautivo
+Diseñar la red inalámbrica del campus central y las sedes regionales, garantizando cobertura total y una experiencia de conectividad continua para los usuarios. La propuesta debe incluir el análisis de densidad de dispositivos por zona, la planificación de frecuencias y estándares a utilizar, la movilidad entre puntos de acceso sin interrupciones, y un modelo de gestión centralizada que permita administrar toda la infraestructura WLAN de forma unificada.
+
+4.3. Cableado Estructurado
+Proyectar la infraestructura de cableado estructurado del campus central y las sedes regionales, seleccionando los medios de transmisión adecuados para cada segmento de la red según sus requerimientos de distancia y ancho de banda. La propuesta debe contemplar la distribución física de los puntos de concentración, el cumplimiento de las normativas vigentes del sector, los procedimientos de certificación del cableado instalado y la documentación completa de la instalación.
+
+4.4. Red WAN e Interconexión de Sedes
+Diseñar la interconexión WAN entre el campus central y las sedes regionales, asegurando el ancho de banda, la seguridad y la disponibilidad necesarios para sostener las operaciones de la institución. La propuesta debe justificar la tecnología de acceso seleccionada, el esquema de seguridad para el tráfico entre sedes, la estrategia de continuidad ante fallas del enlace principal y los criterios de calidad de servicio exigidos al proveedor.
+
+4.5. Calidad de Servicio (QoS)
+Definir una política de calidad de servicio que garantice el funcionamiento óptimo de las aplicaciones críticas de la institución sobre la infraestructura de red. La propuesta debe identificar los tipos de tráfico presentes en la red, establecer criterios de clasificación y priorización, y asegurar que dicha política sea coherente y aplicable en todos los segmentos de la red: LAN, WLAN y WAN.
+
+4.6. Control de Acceso a la Red (NAC / 802.1X)
+Diseñar un esquema de control de acceso a la red que permita gestionar la identidad de los dispositivos y usuarios que se conectan a la infraestructura. La propuesta debe contemplar los distintos perfiles de acceso existentes en la institución, el mecanismo de autenticación seleccionado, la integración con los sistemas de directorio de usuarios y la política de acceso aplicable a dispositivos no reconocidos o no gestionados
+
+4.7. Videovigilancia IP
+Diseñar el sistema de videovigilancia IP integrado a la infraestructura de red, determinando la distribución de cámaras en cada planta del campus central y en las sedes regionales. La propuesta debe incluir el modelo de almacenamiento centralizado con su correspondiente cálculo de capacidad, el impacto del sistema sobre el ancho de banda de la red y las medidas de segmentación adoptadas para aislar este tráfico del resto de la red.
+
+4.8. Datacenter (Campus Central, Piso 3)
+Proponer el diseño del datacenter del campus central, contemplando los criterios de redundancia, disponibilidad y organización física necesarios para sostener los servicios de la institución. La pro-puesta debe incluir la infraestructura de soporte (alimentación, refrigeración), la arquitectura de los servicios internos alojados y el sistema de monitoreo y gestión centralizada de la red.

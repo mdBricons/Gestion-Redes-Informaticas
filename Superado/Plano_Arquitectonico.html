@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>EduTech Campus — Plano Arquitectónico (vista en planta)</title>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --paper: #ffffff;
+    --ink: #1f2937;
+    --ink-soft: #4b5563;
+    --label: #374151;
+    --muted: #9ca3af;
+    --accent: #0ea5e9;
+    --door: #6b7280;
+    --fixture: #d1d5db;
+    --fixture-stroke: #9ca3af;
+    --tab-active: #1f2937;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Georgia', 'Times New Roman', serif;
+  }
+  body { padding: 20px; }
+
+  h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--ink);
+  }
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: 12px;
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0;
+    border-bottom: 2px solid var(--ink);
+  }
+  .tab {
+    background: transparent;
+    border: 1px solid transparent;
+    border-bottom: none;
+    color: var(--ink-soft);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 22px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.active {
+    color: var(--ink);
+    background: var(--paper);
+    border-color: var(--ink);
+    border-bottom-color: var(--paper);
+    margin-bottom: -2px;
+  }
+
+  .pane {
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    border-top: none;
+    padding: 16px;
+  }
+  .pane[hidden] { display: none; }
+
+  .plano-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 16px 8px;
+    border-bottom: 1px solid var(--muted);
+    margin-bottom: 12px;
+  }
+  .plano-title {
+    font-size: 18px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .plano-meta {
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  .floor-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* SVG styles */
+  .wall-ext { fill: #1f2937; }
+  .wall-int { fill: #4b5563; }
+  .door-arc { fill: none; stroke: #6b7280; stroke-width: 1.2; stroke-dasharray: none; }
+  .door-leaf { stroke: #6b7280; stroke-width: 1.5; fill: none; }
+  .opening   { fill: var(--paper); }
+
+  .room-label {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 15px;
+    fill: #1f2937;
+    text-anchor: middle;
+    letter-spacing: 1px;
+  }
+  .room-sublabel {
+    font-family: 'Georgia', serif;
+    font-size: 10px;
+    fill: #6b7280;
+    text-anchor: middle;
+    font-style: normal;
+  }
+
+  .fixture { fill: #e5e7eb; stroke: #9ca3af; stroke-width: 1; }
+  .fixture-line { stroke: #9ca3af; stroke-width: 1; fill: none; }
+  .stair-line { stroke: #6b7280; stroke-width: 1; }
+  .stair-fill { fill: rgba(107,114,128,0.05); stroke: #6b7280; stroke-width: 1; }
+
+  .compass-bg { fill: var(--paper); stroke: var(--ink); stroke-width: 1; }
+  .compass-arrow { fill: var(--ink); }
+  .compass-text { font-family: 'Georgia', serif; font-size: 12px; font-weight: 700; fill: var(--ink); text-anchor: middle; }
+
+  .scale-bar { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+  .scale-text { font-family: 'Georgia', serif; font-size: 9px; fill: var(--ink); text-anchor: middle; }
+
+  .frente-text {
+    font-family: 'Georgia', serif;
+    font-size: 11px;
+    fill: var(--ink-soft);
+    text-anchor: middle;
+    letter-spacing: 4px;
+    font-style: italic;
+  }
+
+  .legend-svg {
+    font-family: 'Georgia', serif;
+    font-size: 9px;
+    fill: var(--ink-soft);
+  }
+
+  .footer {
+    margin-top: 12px;
+    color: var(--ink-soft);
+    font-size: 10px;
+    text-align: center;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<h1>EDUTECH CAMPUS S.A. — PLANO ARQUITECTÓNICO</h1>
+<div class="subtitle">Campus Central · CABA · Edificio de 4 plantas · ~1.800 m² por planta · Esquema no a escala — solo distribución.</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab active" data-floor="pb">Planta Baja</button>
+  <button class="tab" data-floor="p1">1° Piso</button>
+  <button class="tab" data-floor="p2">2° Piso</button>
+  <button class="tab" data-floor="p3">3° Piso</button>
+</div>
+
+<!-- ====================== PLANTA BAJA ====================== -->
+<div class="pane" id="pane-pb">
+  <div class="plano-header">
+    <div class="plano-title">Planta Baja · Cota ±0.00 m</div>
+    <div class="plano-meta">
+      Recepción · SUM · Biblioteca · Aula Magna<br/>
+      ~1.800 m² · Acceso principal
+    </div>
+  </div>
+
+  <svg class="floor-svg" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- "FRENTE" label -->
+    <text x="600" y="20" class="frente-text">─── FRENTE DEL EDIFICIO ───</text>
+
+    <!-- =================== WALLS - EXTERIOR =================== -->
+    <!-- Top exterior wall (with main entrance gap) -->
+    <rect class="wall-ext" x="50" y="50" width="470" height="10"/>
+    <rect class="wall-ext" x="680" y="50" width="470" height="10"/>
+    <!-- Entrance opening symbol -->
+    <line x1="520" y1="55" x2="680" y2="55" class="door-leaf" stroke-dasharray="4,3"/>
+    <path d="M 520 50 Q 600 110 680 50" class="door-arc"/>
+
+    <!-- Right exterior -->
+    <rect class="wall-ext" x="1140" y="50" width="10" height="700"/>
+    <!-- Bottom exterior (with emergency exit gap) -->
+    <rect class="wall-ext" x="50" y="740" width="850" height="10"/>
+    <rect class="wall-ext" x="970" y="740" width="180" height="10"/>
+    <line x1="900" y1="745" x2="970" y2="745" class="door-leaf" stroke-dasharray="4,3"/>
+    <!-- Left exterior -->
+    <rect class="wall-ext" x="50" y="50" width="10" height="700"/>
+
+    <!-- =================== WALLS - INTERIOR =================== -->
+    <!-- Vertical wall: Recepción | Lobby   at x=340 -->
+    <rect class="wall-int" x="340" y="60" width="6" height="120"/>
+    <rect class="wall-int" x="340" y="225" width="6" height="35"/>
+    <!-- Vertical wall: Lobby | SUM         at x=700 -->
+    <rect class="wall-int" x="700" y="60" width="6" height="120"/>
+    <rect class="wall-int" x="700" y="225" width="6" height="35"/>
+
+    <!-- Horizontal wall y=260 separates lobby zone from circulation -->
+    <rect class="wall-int" x="60" y="260" width="280" height="6"/>
+    <rect class="wall-int" x="386" y="260" width="270" height="6"/>
+    <rect class="wall-int" x="700" y="260" width="450" height="6"/>
+
+    <!-- Reception desk hint (mostrador) -->
+    <rect x="100" y="160" width="180" height="20" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
+    <text x="190" y="174" class="room-sublabel" font-style="italic">mostrador</text>
+
+    <!-- Torno + huella (entrada) - represented as 2 small squares with arc -->
+    <rect x="490" y="80" width="40" height="40" fill="#e5e7eb" stroke="#6b7280" stroke-width="1"/>
+    <rect x="560" y="80" width="40" height="40" fill="#e5e7eb" stroke="#6b7280" stroke-width="1"/>
+    <rect x="630" y="80" width="40" height="40" fill="#e5e7eb" stroke="#6b7280" stroke-width="1"/>
+    <text x="580" y="145" class="room-sublabel">torno + lector huella</text>
+
+    <!-- Central staircase + elevator (circulation core) -->
+    <!-- Stairs box -->
+    <rect class="stair-fill" x="500" y="290" width="100" height="180"/>
+    <!-- Stair steps -->
+    <line x1="500" y1="310" x2="600" y2="310" class="stair-line"/>
+    <line x1="500" y1="320" x2="600" y2="320" class="stair-line"/>
+    <line x1="500" y1="330" x2="600" y2="330" class="stair-line"/>
+    <line x1="500" y1="340" x2="600" y2="340" class="stair-line"/>
+    <line x1="500" y1="350" x2="600" y2="350" class="stair-line"/>
+    <line x1="500" y1="360" x2="600" y2="360" class="stair-line"/>
+    <line x1="500" y1="370" x2="600" y2="370" class="stair-line"/>
+    <line x1="500" y1="380" x2="600" y2="380" class="stair-line"/>
+    <line x1="550" y1="290" x2="550" y2="470" stroke="#6b7280" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="550" y="395" class="room-sublabel">escalera</text>
+
+    <!-- Elevator -->
+    <rect class="stair-fill" x="500" y="490" width="100" height="80"/>
+    <line x1="500" y1="490" x2="600" y2="570" stroke="#6b7280" stroke-width="0.5"/>
+    <line x1="600" y1="490" x2="500" y2="570" stroke="#6b7280" stroke-width="0.5"/>
+    <text x="550" y="535" class="room-sublabel">ascensor</text>
+
+    <!-- Walls around circulation core -->
+    <rect class="wall-int" x="494" y="270" width="6" height="270"/>
+    <rect class="wall-int" x="600" y="270" width="6" height="200"/>
+    <rect class="wall-int" x="600" y="500" width="6" height="40"/>
+    <rect class="wall-int" x="494" y="570" width="112" height="6"/>
+
+    <!-- Vertical walls dividing main band -->
+    <!-- Biblioteca | central pasillo  (x=430 with door at y=360-400) -->
+    <rect class="wall-int" x="430" y="266" width="6" height="90"/>
+    <rect class="wall-int" x="430" y="400" width="6" height="140"/>
+    <!-- Central pasillo right side already part of stair box -->
+    <!-- Aula Magna | central pasillo (x=670 with door at y=360-400) -->
+    <rect class="wall-int" x="670" y="266" width="6" height="90"/>
+    <rect class="wall-int" x="670" y="400" width="6" height="140"/>
+
+    <!-- Horizontal wall y=540 - separates main rooms from service strip -->
+    <rect class="wall-int" x="60" y="540" width="370" height="6"/>
+    <rect class="wall-int" x="500" y="540" width="6" height="0"/>
+    <rect class="wall-int" x="500" y="570" width="6" height="0"/>
+    <rect class="wall-int" x="606" y="540" width="64" height="6"/>
+    <rect class="wall-int" x="676" y="540" width="464" height="6"/>
+
+    <!-- Service strip verticals -->
+    <rect class="wall-int" x="220" y="546" width="6" height="194"/>
+    <rect class="wall-int" x="380" y="546" width="6" height="194"/>
+    <rect class="wall-int" x="600" y="606" width="6" height="134"/>
+    <rect class="wall-int" x="820" y="606" width="6" height="134"/>
+
+    <!-- Bathroom fixtures (toilets + sinks) -->
+    <!-- Baños masculinos (220-380, 546-740) -->
+    <circle cx="250" cy="600" r="10" class="fixture"/>
+    <circle cx="285" cy="600" r="10" class="fixture"/>
+    <circle cx="320" cy="600" r="10" class="fixture"/>
+    <rect x="240" y="700" width="60" height="20" class="fixture"/>
+    <rect x="310" y="700" width="60" height="20" class="fixture"/>
+
+    <!-- Baños femeninos (60-220, 546-740) -->
+    <circle cx="90" cy="600" r="10" class="fixture"/>
+    <circle cx="125" cy="600" r="10" class="fixture"/>
+    <circle cx="160" cy="600" r="10" class="fixture"/>
+    <circle cx="195" cy="600" r="10" class="fixture"/>
+    <rect x="80" y="700" width="60" height="20" class="fixture"/>
+    <rect x="150" y="700" width="60" height="20" class="fixture"/>
+
+    <!-- IDF (server closet) - small room  386-494, 546-740 -->
+    <rect x="395" y="555" width="90" height="20" class="fixture"/>
+    <text x="440" y="569" class="room-sublabel">rack</text>
+
+    <!-- Aula Magna seating hint (rows) -->
+    <g opacity="0.4">
+      <line x1="700" y1="320" x2="1130" y2="320" stroke="#6b7280" stroke-width="0.5"/>
+      <line x1="700" y1="340" x2="1130" y2="340" stroke="#6b7280" stroke-width="0.5"/>
+      <line x1="700" y1="360" x2="1130" y2="360" stroke="#6b7280" stroke-width="0.5"/>
+      <line x1="700" y1="380" x2="1130" y2="380" stroke="#6b7280" stroke-width="0.5"/>
+      <line x1="700" y1="400" x2="1130" y2="400" stroke="#6b7280" stroke-width="0.5"/>
+      <line x1="700" y1="420" x2="1130" y2="420" stroke="#6b7280" stroke-width="0.5"/>
+      <line x1="700" y1="440" x2="1130" y2="440" stroke="#6b7280" stroke-width="0.5"/>
+      <line x1="700" y1="460" x2="1130" y2="460" stroke="#6b7280" stroke-width="0.5"/>
+      <line x1="700" y1="480" x2="1130" y2="480" stroke="#6b7280" stroke-width="0.5"/>
+    </g>
+    <!-- tarima/escenario -->
+    <rect x="710" y="270" width="420" height="35" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1"/>
+    <text x="920" y="291" class="room-sublabel">tarima · proyector</text>
+
+    <!-- Biblioteca shelving -->
+    <g opacity="0.4">
+      <rect x="80" y="290" width="20" height="200" fill="none" stroke="#6b7280" stroke-width="0.8"/>
+      <rect x="115" y="290" width="20" height="200" fill="none" stroke="#6b7280" stroke-width="0.8"/>
+      <rect x="150" y="290" width="20" height="200" fill="none" stroke="#6b7280" stroke-width="0.8"/>
+      <rect x="185" y="290" width="20" height="200" fill="none" stroke="#6b7280" stroke-width="0.8"/>
+      <rect x="220" y="290" width="20" height="200" fill="none" stroke="#6b7280" stroke-width="0.8"/>
+      <rect x="280" y="290" width="20" height="200" fill="none" stroke="#6b7280" stroke-width="0.8"/>
+      <rect x="315" y="290" width="20" height="200" fill="none" stroke="#6b7280" stroke-width="0.8"/>
+      <rect x="350" y="290" width="20" height="200" fill="none" stroke="#6b7280" stroke-width="0.8"/>
+      <rect x="385" y="290" width="20" height="200" fill="none" stroke="#6b7280" stroke-width="0.8"/>
+    </g>
+    <!-- Mesas estudio -->
+    <rect x="260" y="500" width="50" height="25" class="fixture"/>
+    <rect x="320" y="500" width="50" height="25" class="fixture"/>
+
+    <!-- SUM - sillas indication -->
+    <g opacity="0.3">
+      <circle cx="750" cy="100" r="5" class="fixture"/>
+      <circle cx="780" cy="100" r="5" class="fixture"/>
+      <circle cx="810" cy="100" r="5" class="fixture"/>
+      <circle cx="840" cy="100" r="5" class="fixture"/>
+      <circle cx="870" cy="100" r="5" class="fixture"/>
+      <circle cx="900" cy="100" r="5" class="fixture"/>
+      <circle cx="750" cy="130" r="5" class="fixture"/>
+      <circle cx="780" cy="130" r="5" class="fixture"/>
+      <circle cx="810" cy="130" r="5" class="fixture"/>
+      <circle cx="840" cy="130" r="5" class="fixture"/>
+      <circle cx="870" cy="130" r="5" class="fixture"/>
+      <circle cx="900" cy="130" r="5" class="fixture"/>
+      <circle cx="750" cy="160" r="5" class="fixture"/>
+      <circle cx="780" cy="160" r="5" class="fixture"/>
+      <circle cx="810" cy="160" r="5" class="fixture"/>
+      <circle cx="840" cy="160" r="5" class="fixture"/>
+      <circle cx="870" cy="160" r="5" class="fixture"/>
+      <circle cx="900" cy="160" r="5" class="fixture"/>
+      <circle cx="750" cy="190" r="5" class="fixture"/>
+      <circle cx="780" cy="190" r="5" class="fixture"/>
+      <circle cx="810" cy="190" r="5" class="fixture"/>
+      <circle cx="840" cy="190" r="5" class="fixture"/>
+      <circle cx="870" cy="190" r="5" class="fixture"/>
+      <circle cx="900" cy="190" r="5" class="fixture"/>
+    </g>
+
+    <!-- Door arcs -->
+    <!-- Door from outside to lobby (entrance) - already shown as arc on top wall -->
+    <!-- Door Reception <-> Lobby -->
+    <path d="M 346 180 Q 386 220 346 220" class="door-arc"/>
+    <line x1="346" y1="180" x2="346" y2="220" class="door-leaf"/>
+    <!-- Door Lobby <-> SUM -->
+    <path d="M 706 180 Q 700 225 660 220" class="door-arc"/>
+    <line x1="706" y1="180" x2="706" y2="220" class="door-leaf"/>
+    <!-- Door Biblio <-> central pasillo (entry) -->
+    <path d="M 436 360 Q 430 400 470 400" class="door-arc"/>
+    <line x1="436" y1="360" x2="436" y2="400" class="door-leaf"/>
+    <!-- Door Aula Magna <-> central pasillo -->
+    <path d="M 670 360 Q 670 400 630 400" class="door-arc"/>
+    <line x1="670" y1="360" x2="670" y2="400" class="door-leaf"/>
+
+    <!-- =================== ROOM LABELS =================== -->
+    <text x="195" y="240" class="room-label">RECEPCIÓN</text>
+    <text x="195" y="256" class="room-sublabel">staff · huella · CCTV</text>
+
+    <text x="520" y="245" class="room-label">LOBBY / HALL</text>
+    <text x="520" y="261" class="room-sublabel">ingreso público · torno</text>
+
+    <text x="920" y="245" class="room-label">SUM</text>
+    <text x="920" y="261" class="room-sublabel">salón de usos múltiples</text>
+
+    <text x="240" y="410" class="room-label">BIBLIOTECA</text>
+    <text x="240" y="426" class="room-sublabel">~30 puestos · estantería</text>
+
+    <text x="920" y="395" class="room-label">AULA MAGNA</text>
+    <text x="920" y="411" class="room-sublabel">auditorio · ~200 butacas</text>
+
+    <text x="140" y="640" class="room-label" font-size="11">BAÑOS F</text>
+    <text x="305" y="640" class="room-label" font-size="11">BAÑOS M</text>
+    <text x="442" y="675" class="room-label" font-size="11">IDF-PB</text>
+    <text x="713" y="675" class="room-label" font-size="11">CIRCULACIÓN POSTERIOR</text>
+    <text x="985" y="675" class="room-label" font-size="11">SALIDA EMERG.</text>
+
+    <!-- =================== Compass =================== -->
+    <g transform="translate(1080,720)">
+      <circle r="30" class="compass-bg"/>
+      <polygon points="0,-22 6,8 0,3 -6,8" class="compass-arrow"/>
+      <text y="-7" class="compass-text">N</text>
+    </g>
+
+    <!-- Scale bar -->
+    <g transform="translate(60,770)">
+      <rect class="scale-bar" x="0" y="0" width="200" height="6"/>
+      <line x1="50" y1="0" x2="50" y2="6" stroke="#1f2937" stroke-width="1"/>
+      <line x1="100" y1="0" x2="100" y2="6" stroke="#1f2937" stroke-width="1"/>
+      <line x1="150" y1="0" x2="150" y2="6" stroke="#1f2937" stroke-width="1"/>
+      <text x="0" y="20" class="scale-text">0</text>
+      <text x="100" y="20" class="scale-text">~25 m (esc. esquemática)</text>
+      <text x="200" y="20" class="scale-text">50</text>
+    </g>
+  </svg>
+</div>
+
+<!-- ====================== 1° PISO ====================== -->
+<div class="pane" id="pane-p1" hidden>
+  <div class="plano-header">
+    <div class="plano-title">1° Piso · Cota +3.50 m</div>
+    <div class="plano-meta">
+      4 Aulas teóricas · 2 Laboratorios de informática<br/>
+      ~1.800 m² · Mayor densidad de usuarios
+    </div>
+  </div>
+
+  <svg class="floor-svg" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <text x="600" y="20" class="frente-text">─── FRENTE DEL EDIFICIO ───</text>
+
+    <!-- Exterior walls (all closed - upper floors no main entrance) -->
+    <rect class="wall-ext" x="50" y="50" width="1100" height="10"/>
+    <rect class="wall-ext" x="1140" y="50" width="10" height="700"/>
+    <rect class="wall-ext" x="50" y="740" width="1100" height="10"/>
+    <rect class="wall-ext" x="50" y="50" width="10" height="700"/>
+
+    <!-- Interior horizontal wall y=290 -->
+    <rect class="wall-int" x="60" y="290" width="200" height="6"/>
+    <rect class="wall-int" x="320" y="290" width="200" height="6"/>
+    <rect class="wall-int" x="580" y="290" width="200" height="6"/>
+    <rect class="wall-int" x="840" y="290" width="300" height="6"/>
+
+    <!-- Vertical walls dividing aulas T1-T4 -->
+    <rect class="wall-int" x="320" y="60" width="6" height="230"/>
+    <rect class="wall-int" x="580" y="60" width="6" height="230"/>
+    <rect class="wall-int" x="840" y="60" width="6" height="230"/>
+
+    <!-- Pasillo central (y=290 to y=370) - no walls between aulas and labs here -->
+
+    <!-- Horizontal wall y=370 -->
+    <rect class="wall-int" x="60" y="370" width="950" height="6"/>
+    <rect class="wall-int" x="1050" y="370" width="100" height="6"/>
+
+    <!-- Lab A / Lab B divider at x=600 -->
+    <rect class="wall-int" x="600" y="376" width="6" height="170"/>
+    <rect class="wall-int" x="600" y="590" width="6" height="150"/>
+
+    <!-- Service strip y=550 -->
+    <rect class="wall-int" x="60" y="550" width="540" height="6"/>
+    <rect class="wall-int" x="606" y="550" width="544" height="6"/>
+
+    <!-- Service strip verticals (IDF + baños + circulation) -->
+    <rect class="wall-int" x="180" y="556" width="6" height="194"/>
+    <rect class="wall-int" x="340" y="556" width="6" height="194"/>
+    <rect class="wall-int" x="500" y="556" width="6" height="194"/>
+    <rect class="wall-int" x="700" y="556" width="6" height="194"/>
+    <rect class="wall-int" x="900" y="556" width="6" height="194"/>
+
+    <!-- Central staircase + elevator (same position as PB - vertical alignment) -->
+    <rect class="stair-fill" x="1010" y="375" width="130" height="170"/>
+    <line x1="1010" y1="395" x2="1140" y2="395" class="stair-line"/>
+    <line x1="1010" y1="410" x2="1140" y2="410" class="stair-line"/>
+    <line x1="1010" y1="425" x2="1140" y2="425" class="stair-line"/>
+    <line x1="1010" y1="440" x2="1140" y2="440" class="stair-line"/>
+    <line x1="1010" y1="455" x2="1140" y2="455" class="stair-line"/>
+    <line x1="1010" y1="470" x2="1140" y2="470" class="stair-line"/>
+    <line x1="1010" y1="485" x2="1140" y2="485" class="stair-line"/>
+    <line x1="1010" y1="500" x2="1140" y2="500" class="stair-line"/>
+    <text x="1075" y="525" class="room-sublabel">escalera</text>
+
+    <!-- Door arcs - aulas to corridor -->
+    <path d="M 220 290 Q 220 330 260 330" class="door-arc"/>
+    <line x1="220" y1="290" x2="220" y2="330" class="door-leaf"/>
+    <path d="M 480 290 Q 480 330 520 330" class="door-arc"/>
+    <line x1="480" y1="290" x2="480" y2="330" class="door-leaf"/>
+    <path d="M 740 290 Q 740 330 780 330" class="door-arc"/>
+    <line x1="740" y1="290" x2="740" y2="330" class="door-leaf"/>
+    <path d="M 1000 290 Q 1000 330 1040 330" class="door-arc"/>
+    <line x1="1000" y1="290" x2="1000" y2="330" class="door-leaf"/>
+
+    <!-- Door arcs - labs to corridor -->
+    <path d="M 350 370 Q 350 410 390 410" class="door-arc"/>
+    <line x1="350" y1="370" x2="350" y2="410" class="door-leaf"/>
+    <path d="M 850 370 Q 850 410 890 410" class="door-arc"/>
+    <line x1="850" y1="370" x2="850" y2="410" class="door-leaf"/>
+
+    <!-- PCs in Labs - hints (rows) -->
+    <g opacity="0.4">
+      <!-- Lab A rows -->
+      <rect x="80" y="400" width="500" height="12" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.5"/>
+      <rect x="80" y="430" width="500" height="12" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.5"/>
+      <rect x="80" y="460" width="500" height="12" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.5"/>
+      <rect x="80" y="490" width="500" height="12" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.5"/>
+      <rect x="80" y="520" width="500" height="12" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.5"/>
+      <!-- Lab B rows -->
+      <rect x="620" y="400" width="380" height="12" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.5"/>
+      <rect x="620" y="430" width="380" height="12" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.5"/>
+      <rect x="620" y="460" width="380" height="12" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.5"/>
+      <rect x="620" y="490" width="380" height="12" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.5"/>
+      <rect x="620" y="520" width="380" height="12" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.5"/>
+    </g>
+
+    <!-- Proyectores indication (pizarrón) -->
+    <rect x="80" y="80" width="240" height="8" fill="#374151"/>
+    <rect x="340" y="80" width="240" height="8" fill="#374151"/>
+    <rect x="600" y="80" width="240" height="8" fill="#374151"/>
+    <rect x="860" y="80" width="280" height="8" fill="#374151"/>
+
+    <!-- Bathroom fixtures -->
+    <!-- Baños F (60-180) -->
+    <circle cx="90" cy="600" r="9" class="fixture"/>
+    <circle cx="120" cy="600" r="9" class="fixture"/>
+    <circle cx="150" cy="600" r="9" class="fixture"/>
+    <rect x="80" y="700" width="80" height="20" class="fixture"/>
+    <!-- Baños M (186-340) -->
+    <circle cx="210" cy="600" r="9" class="fixture"/>
+    <circle cx="240" cy="600" r="9" class="fixture"/>
+    <circle cx="270" cy="600" r="9" class="fixture"/>
+    <circle cx="300" cy="600" r="9" class="fixture"/>
+    <rect x="200" y="700" width="120" height="20" class="fixture"/>
+
+    <!-- IDF rack -->
+    <rect x="355" y="565" width="125" height="25" class="fixture"/>
+    <text x="417" y="582" class="room-sublabel">rack 48p</text>
+
+    <!-- Room labels -->
+    <text x="190" y="180" class="room-label">AULA T1</text>
+    <text x="190" y="196" class="room-sublabel">~30 alumnos</text>
+
+    <text x="450" y="180" class="room-label">AULA T2</text>
+    <text x="450" y="196" class="room-sublabel">~30 alumnos</text>
+
+    <text x="710" y="180" class="room-label">AULA T3</text>
+    <text x="710" y="196" class="room-sublabel">~30 alumnos</text>
+
+    <text x="990" y="180" class="room-label">AULA T4</text>
+    <text x="990" y="196" class="room-sublabel">~30 alumnos</text>
+
+    <text x="600" y="335" class="room-label">PASILLO CENTRAL</text>
+
+    <text x="330" y="465" class="room-label">LABORATORIO DE INFORMÁTICA A</text>
+    <text x="330" y="481" class="room-sublabel">30 PCs · puesto docente</text>
+
+    <text x="810" y="465" class="room-label">LAB. INFORMÁTICA B</text>
+    <text x="810" y="481" class="room-sublabel">30 PCs · puesto docente</text>
+
+    <text x="120" y="640" class="room-label" font-size="11">BAÑOS F</text>
+    <text x="260" y="640" class="room-label" font-size="11">BAÑOS M</text>
+    <text x="420" y="635" class="room-label" font-size="11">IDF-P1</text>
+    <text x="603" y="630" class="room-label" font-size="11">DEPÓSITO</text>
+    <text x="803" y="630" class="room-label" font-size="11">CIRCULACIÓN</text>
+    <text x="1025" y="630" class="room-label" font-size="11">HALL ASC.</text>
+
+    <!-- Compass -->
+    <g transform="translate(1080,720)">
+      <circle r="30" class="compass-bg"/>
+      <polygon points="0,-22 6,8 0,3 -6,8" class="compass-arrow"/>
+      <text y="-7" class="compass-text">N</text>
+    </g>
+    <g transform="translate(60,770)">
+      <rect class="scale-bar" x="0" y="0" width="200" height="6"/>
+      <line x1="50" y1="0" x2="50" y2="6" stroke="#1f2937" stroke-width="1"/>
+      <line x1="100" y1="0" x2="100" y2="6" stroke="#1f2937" stroke-width="1"/>
+      <line x1="150" y1="0" x2="150" y2="6" stroke="#1f2937" stroke-width="1"/>
+      <text x="100" y="20" class="scale-text">~25 m (esc. esquemática)</text>
+    </g>
+  </svg>
+</div>
+
+<!-- ====================== 2° PISO ====================== -->
+<div class="pane" id="pane-p2" hidden>
+  <div class="plano-header">
+    <div class="plano-title">2° Piso · Cota +7.00 m</div>
+    <div class="plano-meta">
+      Lab Multimedia · Estudio de grabación · Sala de videoconferencia<br/>
+      ~1.800 m² · Tráfico de video en vivo
+    </div>
+  </div>
+
+  <svg class="floor-svg" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <text x="600" y="20" class="frente-text">─── FRENTE DEL EDIFICIO ───</text>
+
+    <!-- Exterior walls -->
+    <rect class="wall-ext" x="50" y="50" width="1100" height="10"/>
+    <rect class="wall-ext" x="1140" y="50" width="10" height="700"/>
+    <rect class="wall-ext" x="50" y="740" width="1100" height="10"/>
+    <rect class="wall-ext" x="50" y="50" width="10" height="700"/>
+
+    <!-- Lab Multimedia | Estudio divider at x=600 -->
+    <rect class="wall-int" x="600" y="60" width="6" height="190"/>
+    <rect class="wall-int" x="600" y="290" width="6" height="30"/>
+
+    <!-- Estudio | Control horizontal at y=200 -->
+    <rect class="wall-int" x="606" y="200" width="380" height="6"/>
+    <rect class="wall-int" x="1030" y="200" width="120" height="6"/>
+
+    <!-- Horizontal wall y=320 separates labs from corridor -->
+    <rect class="wall-int" x="60" y="320" width="540" height="6"/>
+    <rect class="wall-int" x="640" y="320" width="510" height="6"/>
+
+    <!-- Pasillo y=320 to y=400 - corridor through middle -->
+
+    <!-- Horizontal wall y=400 -->
+    <rect class="wall-int" x="60" y="400" width="800" height="6"/>
+    <rect class="wall-int" x="940" y="400" width="210" height="6"/>
+
+    <!-- Acoustic wall around estudio - thicker -->
+    <rect class="wall-int" x="600" y="60" width="10" height="140" fill="#1f2937"/>
+    <rect class="wall-int" x="606" y="60" width="380" height="6" fill="#1f2937"/>
+    <rect class="wall-int" x="986" y="60" width="10" height="146" fill="#1f2937"/>
+    <rect class="wall-int" x="606" y="200" width="380" height="6" fill="#1f2937"/>
+
+    <!-- Videoconferencia | Depósito at x=860 -->
+    <rect class="wall-int" x="860" y="406" width="6" height="334"/>
+
+    <!-- Central staircase + elevator (same x position - vertical core) -->
+    <rect class="stair-fill" x="1010" y="60" width="130" height="140"/>
+    <line x1="1010" y1="80" x2="1140" y2="80" class="stair-line"/>
+    <line x1="1010" y1="95" x2="1140" y2="95" class="stair-line"/>
+    <line x1="1010" y1="110" x2="1140" y2="110" class="stair-line"/>
+    <line x1="1010" y1="125" x2="1140" y2="125" class="stair-line"/>
+    <line x1="1010" y1="140" x2="1140" y2="140" class="stair-line"/>
+    <line x1="1010" y1="155" x2="1140" y2="155" class="stair-line"/>
+    <line x1="1010" y1="170" x2="1140" y2="170" class="stair-line"/>
+    <line x1="1010" y1="185" x2="1140" y2="185" class="stair-line"/>
+    <text x="1075" y="170" class="room-sublabel">escalera</text>
+
+    <!-- Service strip y=620 -->
+    <rect class="wall-int" x="60" y="620" width="500" height="6"/>
+    <rect class="wall-int" x="610" y="620" width="240" height="6"/>
+
+    <!-- Service strip verticals -->
+    <rect class="wall-int" x="180" y="626" width="6" height="124"/>
+    <rect class="wall-int" x="340" y="626" width="6" height="124"/>
+    <rect class="wall-int" x="500" y="626" width="6" height="124"/>
+
+    <!-- Door arcs - labs to corridor -->
+    <path d="M 280 320 Q 280 360 320 360" class="door-arc"/>
+    <line x1="280" y1="320" x2="280" y2="360" class="door-leaf"/>
+    <path d="M 780 320 Q 780 360 820 360" class="door-arc"/>
+    <line x1="780" y1="320" x2="780" y2="360" class="door-leaf"/>
+    <!-- Videoconf door -->
+    <path d="M 430 400 Q 430 440 470 440" class="door-arc"/>
+    <line x1="430" y1="400" x2="430" y2="440" class="door-leaf"/>
+
+    <!-- Sound iso symbol (paredes acústicas estudio) - double line -->
+    <rect class="wall-int" x="615" y="65" width="365" height="2" fill="#9ca3af"/>
+    <rect class="wall-int" x="606" y="65" width="2" height="135" fill="#9ca3af"/>
+    <rect class="wall-int" x="990" y="65" width="2" height="135" fill="#9ca3af"/>
+
+    <!-- Lab Multimedia: workstation islands -->
+    <g opacity="0.4">
+      <rect x="100" y="100" width="80" height="35" class="fixture"/>
+      <rect x="220" y="100" width="80" height="35" class="fixture"/>
+      <rect x="340" y="100" width="80" height="35" class="fixture"/>
+      <rect x="460" y="100" width="80" height="35" class="fixture"/>
+      <rect x="100" y="180" width="80" height="35" class="fixture"/>
+      <rect x="220" y="180" width="80" height="35" class="fixture"/>
+      <rect x="340" y="180" width="80" height="35" class="fixture"/>
+      <rect x="460" y="180" width="80" height="35" class="fixture"/>
+      <rect x="100" y="260" width="80" height="35" class="fixture"/>
+      <rect x="220" y="260" width="80" height="35" class="fixture"/>
+      <rect x="340" y="260" width="80" height="35" class="fixture"/>
+      <rect x="460" y="260" width="80" height="35" class="fixture"/>
+    </g>
+
+    <!-- Videoconf: large table -->
+    <rect x="180" y="490" width="500" height="50" class="fixture"/>
+    <text x="430" y="520" class="room-sublabel">mesa de conferencia</text>
+    <!-- Displays -->
+    <rect x="180" y="430" width="120" height="10" fill="#374151"/>
+    <rect x="560" y="430" width="120" height="10" fill="#374151"/>
+
+    <!-- Estudio - microfonos/equipos indication -->
+    <circle cx="780" cy="130" r="6" class="fixture"/>
+    <circle cx="820" cy="130" r="6" class="fixture"/>
+    <circle cx="860" cy="130" r="6" class="fixture"/>
+    <text x="820" y="160" class="room-sublabel">cabina acústica</text>
+
+    <!-- Control - mixing desk -->
+    <rect x="720" y="240" width="240" height="30" class="fixture"/>
+    <text x="840" y="259" class="room-sublabel">mixer / multiview</text>
+
+    <!-- Bathroom fixtures -->
+    <circle cx="90" cy="670" r="9" class="fixture"/>
+    <circle cx="120" cy="670" r="9" class="fixture"/>
+    <circle cx="150" cy="670" r="9" class="fixture"/>
+    <rect x="80" y="720" width="80" height="15" class="fixture"/>
+    <circle cx="210" cy="670" r="9" class="fixture"/>
+    <circle cx="240" cy="670" r="9" class="fixture"/>
+    <circle cx="270" cy="670" r="9" class="fixture"/>
+    <circle cx="300" cy="670" r="9" class="fixture"/>
+    <rect x="200" y="720" width="120" height="15" class="fixture"/>
+
+    <!-- IDF rack -->
+    <rect x="355" y="640" width="135" height="20" class="fixture"/>
+    <text x="423" y="655" class="room-sublabel">rack 48p</text>
+
+    <!-- Room labels -->
+    <text x="320" y="200" class="room-label">LABORATORIO MULTIMEDIA</text>
+    <text x="320" y="216" class="room-sublabel">~15 workstations · edición</text>
+
+    <text x="795" y="135" class="room-label">ESTUDIO DE GRABACIÓN</text>
+    <text x="795" y="151" class="room-sublabel">acústicamente aislado</text>
+
+    <text x="820" y="260" class="room-label" font-size="13">SALA DE CONTROL TÉCNICO</text>
+
+    <text x="600" y="365" class="room-label">PASILLO CENTRAL</text>
+
+    <text x="430" y="465" class="room-label">SALA DE VIDEOCONFERENCIA</text>
+    <text x="430" y="481" class="room-sublabel">clases híbridas en vivo · QoS crítico</text>
+
+    <text x="1000" y="475" class="room-label" font-size="13">DEPÓSITO AV</text>
+
+    <text x="120" y="670" class="room-label" font-size="11">BAÑOS F</text>
+    <text x="260" y="670" class="room-label" font-size="11">BAÑOS M</text>
+    <text x="423" y="670" class="room-label" font-size="11">IDF-P2</text>
+    <text x="725" y="670" class="room-label" font-size="11">CIRCULACIÓN POSTERIOR</text>
+
+    <!-- Compass + scale -->
+    <g transform="translate(1080,720)">
+      <circle r="30" class="compass-bg"/>
+      <polygon points="0,-22 6,8 0,3 -6,8" class="compass-arrow"/>
+      <text y="-7" class="compass-text">N</text>
+    </g>
+    <g transform="translate(60,770)">
+      <rect class="scale-bar" x="0" y="0" width="200" height="6"/>
+      <line x1="50" y1="0" x2="50" y2="6" stroke="#1f2937" stroke-width="1"/>
+      <line x1="100" y1="0" x2="100" y2="6" stroke="#1f2937" stroke-width="1"/>
+      <line x1="150" y1="0" x2="150" y2="6" stroke="#1f2937" stroke-width="1"/>
+      <text x="100" y="20" class="scale-text">~25 m (esc. esquemática)</text>
+    </g>
+  </svg>
+</div>
+
+<!-- ====================== 3° PISO ====================== -->
+<div class="pane" id="pane-p3" hidden>
+  <div class="plano-header">
+    <div class="plano-title">3° Piso · Cota +10.50 m</div>
+    <div class="plano-meta">
+      Dirección · Administración · Datacenter (MDF principal)<br/>
+      ~1.800 m² · Acceso restringido al DC
+    </div>
+  </div>
+
+  <svg class="floor-svg" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <text x="600" y="20" class="frente-text">─── FRENTE DEL EDIFICIO ───</text>
+
+    <!-- Exterior walls -->
+    <rect class="wall-ext" x="50" y="50" width="1100" height="10"/>
+    <rect class="wall-ext" x="1140" y="50" width="10" height="700"/>
+    <rect class="wall-ext" x="50" y="740" width="1100" height="10"/>
+    <rect class="wall-ext" x="50" y="50" width="10" height="700"/>
+
+    <!-- Top row: Dirección | Admin | Sala reuniones -->
+    <!-- Dirección | Admin at x=350 -->
+    <rect class="wall-int" x="350" y="60" width="6" height="200"/>
+    <!-- Admin | Sala reuniones at x=900 -->
+    <rect class="wall-int" x="900" y="60" width="6" height="200"/>
+
+    <!-- Horizontal y=290 -->
+    <rect class="wall-int" x="60" y="290" width="950" height="6"/>
+    <rect class="wall-int" x="1050" y="290" width="100" height="6"/>
+
+    <!-- Pasillo y=290-380 -->
+
+    <!-- Horizontal y=380 - top of DC area -->
+    <rect class="wall-int" x="60" y="380" width="200" height="6"/>
+    <rect class="wall-int" x="300" y="380" width="850" height="6"/>
+
+    <!-- Mantrap | Datacenter at x=300 -->
+    <rect class="wall-int" x="300" y="386" width="10" height="280" fill="#1f2937"/>
+    <!-- Datacenter walls THICKER (secure room) -->
+    <rect class="wall-int" x="60" y="380" width="10" height="280" fill="#1f2937"/>
+    <rect class="wall-int" x="60" y="660" width="1090" height="10" fill="#1f2937"/>
+    <rect class="wall-int" x="1140" y="380" width="10" height="290" fill="#1f2937"/>
+    <rect class="wall-int" x="300" y="380" width="850" height="10" fill="#1f2937"/>
+
+    <!-- Mantrap interior structure -->
+    <rect class="wall-int" x="170" y="390" width="6" height="60"/>
+    <rect class="wall-int" x="170" y="510" width="6" height="60"/>
+    <rect class="wall-int" x="60" y="450" width="240" height="6"/>
+    <rect class="wall-int" x="60" y="570" width="240" height="6"/>
+
+    <!-- Datacenter internal racks -->
+    <g>
+      <!-- Rack row 1 -->
+      <rect x="380" y="430" width="40" height="100" class="fixture" fill="#94a3b8"/>
+      <rect x="440" y="430" width="40" height="100" class="fixture" fill="#94a3b8"/>
+      <rect x="500" y="430" width="40" height="100" class="fixture" fill="#94a3b8"/>
+      <rect x="560" y="430" width="40" height="100" class="fixture" fill="#94a3b8"/>
+      <text x="490" y="555" class="room-sublabel">racks de red + servidores</text>
+      <!-- Rack row 2 -->
+      <rect x="700" y="430" width="40" height="100" class="fixture" fill="#94a3b8"/>
+      <rect x="760" y="430" width="40" height="100" class="fixture" fill="#94a3b8"/>
+      <rect x="820" y="430" width="40" height="100" class="fixture" fill="#94a3b8"/>
+      <rect x="880" y="430" width="40" height="100" class="fixture" fill="#94a3b8"/>
+      <text x="810" y="555" class="room-sublabel">racks de servidores + UPS</text>
+      <!-- Aire acondicionado -->
+      <rect x="970" y="430" width="160" height="60" class="fixture" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="1050" y="465" class="room-sublabel">A/C principal</text>
+      <rect x="970" y="500" width="160" height="60" class="fixture" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="1050" y="535" class="room-sublabel">A/C respaldo (N+1)</text>
+    </g>
+
+    <!-- Service strip y=670 -->
+    <!-- (Already inside outer wall: 60 wall-ext at top of strip, 740 wall-ext bottom) -->
+    <rect class="wall-int" x="170" y="670" width="6" height="70"/>
+    <rect class="wall-int" x="340" y="670" width="6" height="70"/>
+    <rect class="wall-int" x="500" y="670" width="6" height="70"/>
+    <rect class="wall-int" x="700" y="670" width="6" height="70"/>
+    <rect class="wall-int" x="900" y="670" width="6" height="70"/>
+
+    <!-- Central staircase -->
+    <rect class="stair-fill" x="1010" y="60" width="130" height="230"/>
+    <line x1="1010" y1="80" x2="1140" y2="80" class="stair-line"/>
+    <line x1="1010" y1="100" x2="1140" y2="100" class="stair-line"/>
+    <line x1="1010" y1="120" x2="1140" y2="120" class="stair-line"/>
+    <line x1="1010" y1="140" x2="1140" y2="140" class="stair-line"/>
+    <line x1="1010" y1="160" x2="1140" y2="160" class="stair-line"/>
+    <line x1="1010" y1="180" x2="1140" y2="180" class="stair-line"/>
+    <line x1="1010" y1="200" x2="1140" y2="200" class="stair-line"/>
+    <text x="1075" y="240" class="room-sublabel">escalera + ascensor</text>
+
+    <!-- Office furniture hints -->
+    <!-- Dirección: desk -->
+    <rect x="120" y="120" width="180" height="40" class="fixture"/>
+    <text x="210" y="142" class="room-sublabel">escritorio dirección</text>
+    <!-- Admin: cubicles -->
+    <g opacity="0.4">
+      <rect x="400" y="110" width="100" height="50" class="fixture"/>
+      <rect x="520" y="110" width="100" height="50" class="fixture"/>
+      <rect x="640" y="110" width="100" height="50" class="fixture"/>
+      <rect x="760" y="110" width="100" height="50" class="fixture"/>
+      <rect x="400" y="200" width="100" height="50" class="fixture"/>
+      <rect x="520" y="200" width="100" height="50" class="fixture"/>
+      <rect x="640" y="200" width="100" height="50" class="fixture"/>
+      <rect x="760" y="200" width="100" height="50" class="fixture"/>
+    </g>
+    <!-- Sala reuniones: large table -->
+    <rect x="940" y="130" width="180" height="80" class="fixture"/>
+    <text x="1030" y="175" class="room-sublabel">mesa de reuniones</text>
+
+    <!-- Bathroom fixtures (service strip) -->
+    <circle cx="90" cy="700" r="8" class="fixture"/>
+    <circle cx="120" cy="700" r="8" class="fixture"/>
+    <circle cx="150" cy="700" r="8" class="fixture"/>
+    <rect x="80" y="725" width="80" height="12" class="fixture"/>
+    <circle cx="200" cy="700" r="8" class="fixture"/>
+    <circle cx="230" cy="700" r="8" class="fixture"/>
+    <circle cx="260" cy="700" r="8" class="fixture"/>
+    <circle cx="290" cy="700" r="8" class="fixture"/>
+    <rect x="180" y="725" width="125" height="12" class="fixture"/>
+
+    <!-- Door arcs -->
+    <!-- Dirección to pasillo -->
+    <path d="M 240 290 Q 240 330 280 330" class="door-arc"/>
+    <line x1="240" y1="290" x2="240" y2="330" class="door-leaf"/>
+    <!-- Admin to pasillo -->
+    <path d="M 620 290 Q 620 330 660 330" class="door-arc"/>
+    <line x1="620" y1="290" x2="620" y2="330" class="door-leaf"/>
+    <!-- Sala reuniones to pasillo -->
+    <path d="M 960 290 Q 960 330 1000 330" class="door-arc"/>
+    <line x1="960" y1="290" x2="960" y2="330" class="door-leaf"/>
+    <!-- Mantrap entrance from pasillo (DOUBLE biometric) -->
+    <path d="M 200 380 Q 200 420 240 420" class="door-arc" stroke="#dc2626"/>
+    <line x1="200" y1="380" x2="200" y2="420" class="door-leaf"/>
+    <text x="170" y="430" class="room-sublabel" fill="#dc2626" font-size="9">2x huella</text>
+    <!-- Mantrap to Datacenter (segunda biometría) -->
+    <path d="M 310 470 Q 350 470 350 510" class="door-arc" stroke="#dc2626"/>
+    <line x1="310" y1="470" x2="310" y2="510" class="door-leaf"/>
+
+    <!-- Room labels -->
+    <text x="205" y="225" class="room-label">DIRECCIÓN</text>
+    <text x="205" y="241" class="room-sublabel">acceso restringido</text>
+
+    <text x="625" y="225" class="room-label">ADMINISTRACIÓN</text>
+    <text x="625" y="241" class="room-sublabel">~10 puestos</text>
+
+    <text x="1030" y="230" class="room-label">SALA DE REUNIONES</text>
+    <text x="1030" y="246" class="room-sublabel">junta directiva</text>
+
+    <text x="600" y="335" class="room-label">PASILLO ADMINISTRATIVO</text>
+
+    <text x="180" y="490" class="room-label" font-size="13">MANTRAP</text>
+    <text x="180" y="505" class="room-sublabel">esclusa biométrica</text>
+
+    <text x="700" y="410" class="room-label" font-size="18" letter-spacing="6">DATACENTER · MDF</text>
+    <text x="700" y="430" class="room-sublabel" font-size="11" font-style="italic">sala restringida · cámaras internas · doble factor</text>
+
+    <text x="120" y="710" class="room-label" font-size="11">BAÑOS F</text>
+    <text x="245" y="710" class="room-label" font-size="11">BAÑOS M</text>
+    <text x="423" y="710" class="room-label" font-size="11">DEPÓSITO</text>
+    <text x="603" y="710" class="room-label" font-size="11">CIRCULACIÓN POSTERIOR</text>
+    <text x="803" y="710" class="room-label" font-size="11">SALIDA EMERG.</text>
+    <text x="1025" y="710" class="room-label" font-size="11">HALL ASC.</text>
+
+    <!-- Compass + scale -->
+    <g transform="translate(1080,720)">
+      <circle r="30" class="compass-bg"/>
+      <polygon points="0,-22 6,8 0,3 -6,8" class="compass-arrow"/>
+      <text y="-7" class="compass-text">N</text>
+    </g>
+    <g transform="translate(60,770)">
+      <rect class="scale-bar" x="0" y="0" width="200" height="6"/>
+      <line x1="50" y1="0" x2="50" y2="6" stroke="#1f2937" stroke-width="1"/>
+      <line x1="100" y1="0" x2="100" y2="6" stroke="#1f2937" stroke-width="1"/>
+      <line x1="150" y1="0" x2="150" y2="6" stroke="#1f2937" stroke-width="1"/>
+      <text x="100" y="20" class="scale-text">~25 m (esc. esquemática)</text>
+    </g>
+  </svg>
+</div>
+
+<div class="footer">
+  EduTech Campus S.A. — Plano arquitectónico esquemático · Vista en planta · Generado como base para mapeo de cobertura WiFi.
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.pane').forEach(p => p.hidden = true);
+      document.getElementById('pane-' + btn.dataset.floor).hidden = false;
+    });
+  });
+</script>
+
+</body>
+</html>

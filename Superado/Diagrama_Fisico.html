@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>EduTech Campus — Diagrama Físico</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #243246;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-2: #22d3ee;
+    --warn: #f59e0b;
+    --ok: #10b981;
+    --danger: #ef4444;
+    --pb: #6366f1;
+    --p1: #0ea5e9;
+    --p2: #14b8a6;
+    --p3: #f59e0b;
+    --wan: #a78bfa;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  body { padding: 24px; }
+
+  h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+    letter-spacing: 0.3px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 18px;
+    font-size: 12px;
+  }
+  .legend .item { display: flex; align-items: center; gap: 6px; }
+  .swatch {
+    width: 14px; height: 14px; border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 18px;
+  }
+
+  /* ===== Edificio ===== */
+  .building {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .building-title {
+    font-size: 14px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .floor {
+    position: relative;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px 14px;
+    margin-bottom: 12px;
+  }
+  .floor::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    border-radius: 10px 0 0 10px;
+    background: var(--p1);
+  }
+  .floor.pb::before { background: var(--pb); }
+  .floor.p1::before { background: var(--p1); }
+  .floor.p2::before { background: var(--p2); }
+  .floor.p3::before { background: var(--p3); }
+
+  .floor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .floor-name {
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.4px;
+  }
+  .floor-meta {
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .rooms {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .room {
+    background: rgba(255,255,255,0.03);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 11.5px;
+  }
+  .room .room-name {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    font-size: 11.5px;
+  }
+  .devices {
+    display: flex; flex-wrap: wrap; gap: 4px;
+  }
+  .dev {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #0b1220;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 2px 7px;
+    font-size: 10.5px;
+    color: var(--text);
+  }
+  .dev svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+  .dev.ap     { border-color: #1e40af; color: #93c5fd; }
+  .dev.cam    { border-color: #6d28d9; color: #c4b5fd; }
+  .dev.pc     { border-color: #047857; color: #6ee7b7; }
+  .dev.bio    { border-color: #b45309; color: #fcd34d; }
+  .dev.iot    { border-color: #be185d; color: #f9a8d4; }
+  .dev.print  { border-color: #475569; color: #cbd5e1; }
+  .dev.phone  { border-color: #0e7490; color: #67e8f9; }
+  .dev.disp   { border-color: #334155; color: #cbd5e1; }
+
+  .idf-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+    padding: 8px 10px;
+    background: #0b1220;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+  }
+  .idf-tag {
+    background: #1e293b;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+  .idf-row .desc { color: var(--muted); font-size: 11.5px; }
+
+  /* ===== Datacenter ===== */
+  .floor.p3 { background: linear-gradient(180deg, #243246 0%, #2a2118 100%); }
+  .dc {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.35);
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 8px;
+  }
+  .dc-title {
+    color: var(--p3);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .dc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .dc-item {
+    background: #0b1220;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 11px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .dc-item svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--p3); }
+  .dc-item .name { color: var(--text); }
+  .dc-item .role { color: var(--muted); font-size: 10px; }
+
+  /* ===== Backbone visual ===== */
+  .backbone-note {
+    margin-top: 8px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    font-style: italic;
+  }
+
+  /* ===== WAN panel (right column) ===== */
+  .wan-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .card h3 {
+    margin: 0 0 10px;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .internet-box {
+    background: linear-gradient(135deg, #0c4a6e, #075985);
+    border: 1px solid #0284c7;
+    color: #e0f2fe;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .fw-box {
+    background: #2c1810;
+    border: 1px solid var(--danger);
+    color: #fecaca;
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .fw-box .sub { color: #fca5a5; font-size: 10.5px; font-weight: 400; }
+
+  .sede {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .sede h4 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: var(--accent);
+  }
+  .sede .meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .sede .dev-list {
+    display: flex; flex-wrap: wrap; gap: 4px;
+  }
+
+  .arrow-down {
+    text-align: center;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1;
+    margin: 2px 0;
+  }
+
+  .footer {
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 11px;
+    text-align: right;
+  }
+
+  @media (max-width: 1100px) {
+    .layout { grid-template-columns: 1fr; }
+    .rooms { grid-template-columns: repeat(2, 1fr); }
+    .dc-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<h1>EduTech Campus S.A. — Diagrama Físico (Topología propuesta)</h1>
+<div class="subtitle">Campus Central (CABA, 4 pisos · ~1.800 m² c/u) + Sedes Regionales Norte (Rosario) y Sur (Mendoza)</div>
+
+<div class="legend">
+  <div class="item"><span class="swatch" style="background:var(--pb)"></span> PB</div>
+  <div class="item"><span class="swatch" style="background:var(--p1)"></span> 1° Piso</div>
+  <div class="item"><span class="swatch" style="background:var(--p2)"></span> 2° Piso</div>
+  <div class="item"><span class="swatch" style="background:var(--p3)"></span> 3° Piso (Datacenter)</div>
+  <div class="item"><span class="swatch" style="background:#1e40af"></span> AP WiFi</div>
+  <div class="item"><span class="swatch" style="background:#6d28d9"></span> Cámara IP</div>
+  <div class="item"><span class="swatch" style="background:#047857"></span> PC / Workstation</div>
+  <div class="item"><span class="swatch" style="background:#b45309"></span> Lector huella / NAC físico</div>
+  <div class="item"><span class="swatch" style="background:#be185d"></span> IoT</div>
+  <div class="item"><span class="swatch" style="background:#0e7490"></span> Teléfono IP</div>
+</div>
+
+<!-- SVG icon defs (inline) -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="i-ap" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a9 9 0 0 0-9 9h2a7 7 0 0 1 14 0h2a9 9 0 0 0-9-9zm0 4a5 5 0 0 0-5 5h2a3 3 0 0 1 6 0h2a5 5 0 0 0-5-5zm0 4a1 1 0 0 0-1 1v8h2v-8a1 1 0 0 0-1-1z"/></symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24"><path fill="currentColor" d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></symbol>
+    <symbol id="i-pc" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H8v-2h3v-2H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></symbol>
+    <symbol id="i-bio" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1a10 10 0 0 0-7 17.1l1.4-1.4A8 8 0 1 1 20 12h2A10 10 0 0 0 12 1zm0 4a7 7 0 0 0-6 10.6l1.4-1.4A5 5 0 1 1 17 12h2a7 7 0 0 0-7-7zm0 4a3 3 0 0 0-3 3 3 3 0 0 0 .8 2l1.4-1.4a1 1 0 1 1 1.6 0l1.4 1.4A3 3 0 0 0 12 9z"/></symbol>
+    <symbol id="i-iot" viewBox="0 0 24 24"><path fill="currentColor" d="M7 7h10v10H7zM4 9h2v2H4zm0 4h2v2H4zm14-4h2v2h-2zm0 4h2v2h-2zM9 4h2v2H9zm4 0h2v2h-2zM9 18h2v2H9zm4 0h2v2h-2z"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><path fill="currentColor" d="M19 8H5a3 3 0 0 0-3 3v6h4v4h12v-4h4v-6a3 3 0 0 0-3-3zM7 19v-4h10v4H7zm12-7a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm-2-7H7v3h10V5z"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path fill="currentColor" d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 4v12h12V6H6zm5 13h2v1h-2z"/></symbol>
+    <symbol id="i-disp" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H13v2h4v2H7v-2h4v-2H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></symbol>
+    <symbol id="i-srv" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16v6H4zm0 10h16v6H4zm2 2v2h2v-2H6zm0-10v2h2V6H6z"/></symbol>
+    <symbol id="i-fw" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></symbol>
+    <symbol id="i-sw" viewBox="0 0 24 24"><path fill="currentColor" d="M3 8h18v3H3zm0 5h18v3H3zM6 9.5h1v.5H6zm3 0h1v.5H9zm3 0h1v.5h-1zm-6 5h1v.5H6zm3 0h1v.5H9zm3 0h1v.5h-1z"/></symbol>
+  </defs>
+</svg>
+
+<div class="layout">
+
+  <!-- ============ EDIFICIO CENTRAL ============ -->
+  <div class="building">
+    <div class="building-title">Campus Central — Edificio CABA</div>
+
+    <!-- PISO 3 (DATACENTER + ADMIN) -->
+    <div class="floor p3">
+      <div class="floor-header">
+        <div class="floor-name">3° Piso · Dirección, Administración y Datacenter</div>
+        <div class="floor-meta">~70 dispositivos · MDF principal</div>
+      </div>
+      <div class="rooms">
+        <div class="room">
+          <div class="room-name">Dirección</div>
+          <div class="devices">
+            <span class="dev pc"><svg><use href="#i-pc"/></svg>PC</span>
+            <span class="dev phone"><svg><use href="#i-phone"/></svg>VoIP</span>
+            <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+          </div>
+        </div>
+        <div class="room">
+          <div class="room-name">Administración</div>
+          <div class="devices">
+            <span class="dev pc"><svg><use href="#i-pc"/></svg>PCs</span>
+            <span class="dev print"><svg><use href="#i-print"/></svg>Impr.</span>
+            <span class="dev phone"><svg><use href="#i-phone"/></svg>VoIP</span>
+          </div>
+        </div>
+        <div class="room">
+          <div class="room-name">Pasillos y entrada</div>
+          <div class="devices">
+            <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+            <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+            <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella</span>
+          </div>
+        </div>
+        <div class="room">
+          <div class="room-name">Salas de reunión</div>
+          <div class="devices">
+            <span class="dev disp"><svg><use href="#i-disp"/></svg>Display</span>
+            <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dc">
+        <div class="dc-title">Datacenter (MDF)</div>
+        <div class="dc-grid">
+          <div class="dc-item"><svg><use href="#i-fw"/></svg><div><div class="name">FortiGate CABA</div><div class="role">Firewall + Router + VPN/SD-WAN</div></div></div>
+          <div class="dc-item"><svg><use href="#i-sw"/></svg><div><div class="name">Core Switches (x2)</div><div class="role">L3, HA / Stack — Core Colapsado</div></div></div>
+          <div class="dc-item"><svg><use href="#i-srv"/></svg><div><div class="name">Servidores</div><div class="role">AD, DHCP, DNS, ERP académico</div></div></div>
+          <div class="dc-item"><svg><use href="#i-srv"/></svg><div><div class="name">NVR</div><div class="role">Almacenamiento videovigilancia</div></div></div>
+          <div class="dc-item"><svg><use href="#i-srv"/></svg><div><div class="name">WLC</div><div class="role">Controlador WiFi centralizado</div></div></div>
+          <div class="dc-item"><svg><use href="#i-srv"/></svg><div><div class="name">RADIUS / NAC</div><div class="role">802.1X · BYOD · Portal cautivo</div></div></div>
+          <div class="dc-item"><svg><use href="#i-srv"/></svg><div><div class="name">Servidor Biometría</div><div class="role">Gestión lectores de huella</div></div></div>
+          <div class="dc-item"><svg><use href="#i-srv"/></svg><div><div class="name">UPS + Climatización</div><div class="role">Redundancia A/B</div></div></div>
+        </div>
+        <div class="idf-row" style="margin-top:8px;">
+          <span class="idf-tag">MDF / IDF-P3</span>
+          <span class="desc">Switch de acceso del 3° piso + uplinks 10G al Core</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="backbone-note">Backbone vertical de fibra (riser) — 10 Gbps por IDF hacia el Core</div>
+
+    <!-- PISO 2 -->
+    <div class="floor p2">
+      <div class="floor-header">
+        <div class="floor-name">2° Piso · Laboratorios multimedia, estudio de grabación y videoconferencia</div>
+        <div class="floor-meta">~60 dispositivos</div>
+      </div>
+      <div class="rooms">
+        <div class="room">
+          <div class="room-name">Lab multimedia</div>
+          <div class="devices">
+            <span class="dev pc"><svg><use href="#i-pc"/></svg>PCs x15</span>
+            <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+            <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          </div>
+        </div>
+        <div class="room">
+          <div class="room-name">Estudio de grabación</div>
+          <div class="devices">
+            <span class="dev pc"><svg><use href="#i-pc"/></svg>WS edición</span>
+            <span class="dev iot"><svg><use href="#i-iot"/></svg>Equipos AV</span>
+            <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          </div>
+        </div>
+        <div class="room">
+          <div class="room-name">Sala videoconferencia</div>
+          <div class="devices">
+            <span class="dev disp"><svg><use href="#i-disp"/></svg>Display 4K</span>
+            <span class="dev phone"><svg><use href="#i-phone"/></svg>Codec</span>
+            <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+          </div>
+        </div>
+        <div class="room">
+          <div class="room-name">Pasillos</div>
+          <div class="devices">
+            <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+            <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+          </div>
+        </div>
+      </div>
+      <div class="idf-row">
+        <span class="idf-tag">IDF-P2</span>
+        <span class="desc">Switch de acceso PoE+ (48p) · Uplink fibra 10G ↑ Core (Piso 3)</span>
+      </div>
+    </div>
+
+    <!-- PISO 1 -->
+    <div class="floor p1">
+      <div class="floor-header">
+        <div class="floor-name">1° Piso · Aulas teóricas y laboratorios de informática</div>
+        <div class="floor-meta">~120 dispositivos (mayor densidad)</div>
+      </div>
+      <div class="rooms">
+        <div class="room">
+          <div class="room-name">Lab informática A</div>
+          <div class="devices">
+            <span class="dev pc"><svg><use href="#i-pc"/></svg>PCs x30</span>
+            <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+            <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          </div>
+        </div>
+        <div class="room">
+          <div class="room-name">Lab informática B</div>
+          <div class="devices">
+            <span class="dev pc"><svg><use href="#i-pc"/></svg>PCs x30</span>
+            <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+            <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          </div>
+        </div>
+        <div class="room">
+          <div class="room-name">Aulas teóricas</div>
+          <div class="devices">
+            <span class="dev disp"><svg><use href="#i-disp"/></svg>Proyectores</span>
+            <span class="dev ap"><svg><use href="#i-ap"/></svg>APs x3</span>
+            <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          </div>
+        </div>
+        <div class="room">
+          <div class="room-name">Pasillos / hall</div>
+          <div class="devices">
+            <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+            <span class="dev print"><svg><use href="#i-print"/></svg>Impr.</span>
+          </div>
+        </div>
+      </div>
+      <div class="idf-row">
+        <span class="idf-tag">IDF-P1</span>
+        <span class="desc">Switch de acceso PoE+ (48p x2 — densidad alta) · Uplink fibra 10G ↑ Core</span>
+      </div>
+    </div>
+
+    <!-- PB -->
+    <div class="floor pb">
+      <div class="floor-header">
+        <div class="floor-name">Planta Baja · Recepción, SUM, Biblioteca, Aula Magna</div>
+        <div class="floor-meta">~80 dispositivos · Acceso principal</div>
+      </div>
+      <div class="rooms">
+        <div class="room">
+          <div class="room-name">Recepción / Entrada</div>
+          <div class="devices">
+            <span class="dev bio"><svg><use href="#i-bio"/></svg>Lector huella</span>
+            <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám x2</span>
+            <span class="dev pc"><svg><use href="#i-pc"/></svg>PC recep.</span>
+            <span class="dev disp"><svg><use href="#i-disp"/></svg>Signage</span>
+          </div>
+        </div>
+        <div class="room">
+          <div class="room-name">SUM</div>
+          <div class="devices">
+            <span class="dev ap"><svg><use href="#i-ap"/></svg>APs x2</span>
+            <span class="dev disp"><svg><use href="#i-disp"/></svg>Display</span>
+            <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          </div>
+        </div>
+        <div class="room">
+          <div class="room-name">Biblioteca</div>
+          <div class="devices">
+            <span class="dev pc"><svg><use href="#i-pc"/></svg>PCs x10</span>
+            <span class="dev ap"><svg><use href="#i-ap"/></svg>AP</span>
+            <span class="dev iot"><svg><use href="#i-iot"/></svg>RFID</span>
+          </div>
+        </div>
+        <div class="room">
+          <div class="room-name">Aula Magna</div>
+          <div class="devices">
+            <span class="dev ap"><svg><use href="#i-ap"/></svg>APs x2</span>
+            <span class="dev disp"><svg><use href="#i-disp"/></svg>Proyector</span>
+            <span class="dev phone"><svg><use href="#i-phone"/></svg>Codec VC</span>
+            <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám</span>
+          </div>
+        </div>
+      </div>
+      <div class="idf-row">
+        <span class="idf-tag">IDF-PB</span>
+        <span class="desc">Switch de acceso PoE+ (48p) · Uplink fibra 10G ↑ Core (Piso 3)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ COLUMNA DERECHA: WAN + SEDES ============ -->
+  <div class="wan-col">
+
+    <div class="card">
+      <h3>Borde / WAN</h3>
+      <div class="internet-box">INTERNET</div>
+      <div class="arrow-down">▼</div>
+      <div class="fw-box">
+        FortiGate CABA
+        <div class="sub">Firewall + Router + VPN IPSec / SD-WAN</div>
+      </div>
+      <div class="arrow-down">▼</div>
+      <div style="text-align:center; padding:8px; background:#0b1220; border:1px solid var(--border); border-radius:8px; font-size:12px;">
+        Core Colapsado (Piso 3)<br/>
+        <span style="color:var(--muted); font-size:11px;">Distribuye a IDF PB · 1° · 2° · 3°</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Sedes Regionales (vía SD-WAN)</h3>
+
+      <div class="sede">
+        <h4>Sede Regional Norte — Rosario</h4>
+        <div class="meta">1 piso · 600 m² · ~110 disp.</div>
+        <div class="dev-list">
+          <span class="dev"><svg><use href="#i-fw"/></svg>FortiGate Norte</span>
+          <span class="dev"><svg><use href="#i-sw"/></svg>SW acceso PoE+</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>APs x6</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám IP x6</span>
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PCs Lab</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella</span>
+          <span class="dev phone"><svg><use href="#i-phone"/></svg>VoIP</span>
+          <span class="dev print"><svg><use href="#i-print"/></svg>Impr.</span>
+        </div>
+        <div style="margin-top:6px; color:var(--muted); font-size:11px;">
+          Aulas · Laboratorio · Administración regional
+        </div>
+      </div>
+
+      <div class="sede">
+        <h4>Sede Regional Sur — Mendoza</h4>
+        <div class="meta">1 piso · 500 m² · ~110 disp.</div>
+        <div class="dev-list">
+          <span class="dev"><svg><use href="#i-fw"/></svg>FortiGate Sur</span>
+          <span class="dev"><svg><use href="#i-sw"/></svg>SW acceso PoE+</span>
+          <span class="dev ap"><svg><use href="#i-ap"/></svg>APs x5</span>
+          <span class="dev cam"><svg><use href="#i-cam"/></svg>Cám IP x5</span>
+          <span class="dev pc"><svg><use href="#i-pc"/></svg>PCs Lab</span>
+          <span class="dev bio"><svg><use href="#i-bio"/></svg>Huella</span>
+          <span class="dev phone"><svg><use href="#i-phone"/></svg>VoIP</span>
+          <span class="dev print"><svg><use href="#i-print"/></svg>Impr.</span>
+        </div>
+        <div style="margin-top:6px; color:var(--muted); font-size:11px;">
+          Aulas · Laboratorio · Administración regional
+        </div>
+      </div>
+
+      <div style="font-size:11px; color:var(--muted); margin-top:6px;">
+        Conexión WAN: enlace principal MPLS/fibra + respaldo Internet (SD-WAN, failover automático, VPN IPSec hacia FortiGate CABA).
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>VLANs por funcionalidad</h3>
+      <div style="font-size:11.5px; line-height:1.7;">
+        <div>• VLAN 10 — <b>Administración</b></div>
+        <div>• VLAN 20 — <b>Docentes</b></div>
+        <div>• VLAN 30 — <b>Alumnos / BYOD</b> (NAC 802.1X)</div>
+        <div>• VLAN 40 — <b>Laboratorios / IoT</b></div>
+        <div>• VLAN 50 — <b>Videovigilancia</b> (cámaras + NVR)</div>
+        <div>• VLAN 60 — <b>Control de acceso físico</b> (huella, cerraduras)</div>
+        <div>• VLAN 70 — <b>VoIP</b></div>
+        <div>• VLAN 80 — <b>Invitados</b> (portal cautivo)</div>
+        <div>• VLAN 99 — <b>Management</b> (switches, APs, NVR, WLC)</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  EduTech Campus S.A. · TP Gestión de Redes Informáticas · Diagrama físico generado automáticamente
+</div>
+
+</body>
+</html>
